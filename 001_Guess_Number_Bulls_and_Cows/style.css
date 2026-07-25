@@ -1,0 +1,42 @@
+.digit-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.digit-input {
+  width: 45px;
+  height: 55px;
+  font-size: 24px;
+  text-align: center;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+}
+
+.digit-input:focus {
+  border-color: #007bff;
+}
+
+.butt {
+  color: white;
+  background-color: #BD3315;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 5px 12px;
+  border: none;
+}
+
+.hid-butt {
+  color: white;
+  background-color: #27D60D;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 5px 12px;
+  border: none;
+}
+
+.warn-msg {
+    color: red;
+    background-color: yellow;
+}
