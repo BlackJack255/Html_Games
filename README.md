@@ -1,2 +1,6 @@
 # Html_Games
 Contents of html games, with demos to play
+
+# Contents
+
+1. Guess Number Bulls and Cows [(Demo)](https://blackjack255.github.io/Html_Games/001_Guess_Number_Bulls_and_Cows/)
