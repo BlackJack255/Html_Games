@@ -82,22 +82,14 @@ inputs.forEach((input, index) => {
                 full_input = true
             }
             else if (index < DIGIT_LEN - 1){
-                console.log("input idx added")
                 inputs[index + 1].focus();
                 cursor_idx += 1
             }
         }
-        else{
-            console.log("input event that with no value")
-        }
-        console.log("final index cursor: ", index, cursor_idx, "-----------------------")
     });
 
     input.addEventListener('keydown', (e) => {
-        console.log("===========================================")
-        console.log("keydown first?")
         if (e.key === 'Backspace') {
-            console.log("backspace pressed")
             full_input = false
 
             if (warn_acti){
@@ -184,11 +176,6 @@ function check_guess(){
                     inputs[i].focus()
                 }
             }
-
-            console.log(Ans_hist_arr)
-            console.log(Qualify_hist_list)
-
-            console.log(Guess_status)
 
             print_str = print_str + ` ${a_num}A${b_num}B`
 
