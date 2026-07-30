@@ -1,6 +1,7 @@
 var inputDoors = document.getElementById("input-doors")
 var startButt = document.getElementById("start-butt")
 
+const door_min = 3
 var door_num = 3
 var door_arr = null
 
@@ -22,46 +23,56 @@ var finalResult = document.getElementById("final-result")
 function generate_door(){
     door_num = inputDoors.valueAsNumber
 
-    door_arr = new Array(door_num)
+    if(door_num >= door_min){
+        door_arr = new Array(door_num)
 
-    for (let i=0; i<door_num; i++){
-        door_arr[i] = 0
+        for (let i=0; i<door_num; i++){
+            door_arr[i] = 0
+        }
+
+        const car_idx = Math.floor(Math.random() * door_num)
+        door_arr[ car_idx ] = 1
+
+        return true
     }
-
-    const car_idx = Math.floor(Math.random() * door_num)
-    door_arr[ car_idx ] = 1
+    else{
+        return false
+    }
 }
 
 function generate_door_gui(){
-    generate_door()
+    let qualified = generate_door()
 
-    doorObj.replaceChildren()
+    if(!qualified){
+        doorObj.innerHTML = "Doors number need at least 3"
+    }
+    else{
+        doorObj.replaceChildren()
 
-    //generate door buttons
-    for (let i=0; i<door_num; i++){
-        var door_butt = document.createElement('button')
-        door_butt.textContent = `Door ${i+1}`
-        door_butt.style.width = "auto";  // Or dynamicButton.style.width = "";
-        door_butt.style.height = "auto";
-        door_butt.value = i
+        //generate door buttons
+        for (let i=0; i<door_num; i++){
+            var door_butt = document.createElement('button')
+            door_butt.textContent = `Door ${i+1}`
+            door_butt.style.width = "auto";  // Or dynamicButton.style.width = "";
+            door_butt.style.height = "auto";
+            door_butt.value = i
 
 
-        // listener
-        door_butt.addEventListener("click", (event) => {manage_goat_gui(event)} )
+            // listener
+            door_butt.addEventListener("click", (event) => {manage_goat_gui(event)} )
 
-        //id?
-        doorObj.appendChild(door_butt)
+            //id?
+            doorObj.appendChild(door_butt)
 
-        // control by doorObj array index, unable to insert <span>
+            // control by doorObj array index, unable to insert <span>
+
+        }
 
     }
-
     // clear previous results
     askChoice.replaceChildren()
     finalChoice.replaceChildren()
     finalResult.replaceChildren()
-
-
     
 }
 startButt.addEventListener("click", (event) => {generate_door_gui()})
