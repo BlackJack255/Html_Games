@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- ref: https://getbootstrap.com/docs/5.3/getting-started/introduction/ -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+        <link href="style.css" rel="stylesheet"/>
+        <title>Three Doors Problem</title>
+    </head>
+
+    <body style="display: flex; justify-content: center; text-align: center;">
+        <div>
+            <h1>Guess Which Door is Car Game<br></h1>
+            <h3>Three Doors Problem</h3>
+            <h4> Behind one door is a car; behind the others, goats.<br></h4>
+            <h4>Set number of doors, between 3 and 10<br></h4>
+
+            <input type="number" min="3" max="10" step="1" value="3" id="input-doors"/>Doors
+            <button id="start-butt">Start</button>
+            <br>
+            <br>
+
+            <!-- empty div obj, js generate doors -->
+            <div id="door-obj"></div>
+            <br>
+            <div id="ask-choice"></div>
+            <div id="final-choice"></div>
+            <br>
+            <br>
+            <div id="final-result"></div>
+        </div>
+
+        
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+        <script src="script.js"></script>
+    </body>
+
+</html>
