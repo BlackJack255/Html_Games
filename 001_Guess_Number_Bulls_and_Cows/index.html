@@ -7,19 +7,19 @@
         <link href="style.css" rel="stylesheet"/>
         <title>Guess Number</title>
     </head>
-    <body>
+    <body class="dark-mode">
         <br>
-        <h2 class="digit-group">Guess number, each number between 0 - 9, every digit unique</h2>
+        <h2 class="digit-group dark-mode">Guess number, each number between 0 - 9, every digit unique</h2>
 
-        <h4 class="digit-group" id="guess-table"></h4>
-        <h5 class="digit-group" id="warning-str"><br></h5>
+        <h4 class="digit-group dark-mode" id="guess-table"></h4>
+        <h5 class="digit-group dark-mode" id="warning-str"><br></h5>
 
         <!-- restrict input numerical, oninput https://stackoverflow.com/questions/68394492/input-with-type-number-that-allows-only-numbers-to-be-typed-->
         <div class="digit-group">
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" oninput="this.value = this.value.replace(/\D/g, '')" autofocus />
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" oninput="this.value = this.value.replace(/\D/g, '')"/>
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" oninput="this.value = this.value.replace(/\D/g, '')"/>
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" oninput="this.value = this.value.replace(/\D/g, '')"/>
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input dark-mode" oninput="this.value = this.value.replace(/\D/g, '')" autofocus />
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input dark-mode" oninput="this.value = this.value.replace(/\D/g, '')"/>
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input dark-mode" oninput="this.value = this.value.replace(/\D/g, '')"/>
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input dark-mode" oninput="this.value = this.value.replace(/\D/g, '')"/>
             <button class="butt" id="guess-butt">Guess!</button>
         </div>
 
