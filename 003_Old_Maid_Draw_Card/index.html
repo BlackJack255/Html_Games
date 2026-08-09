@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <title>Old Maid</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <script src="cardts.min.js"></script>
+    <script src="element.card-t.full.js"></script>
+    <script type="module" src="solitaire.js"></script>
+    <link rel="stylesheet" type="text/css" href="solitaire.css" />
+
+    <style id=nthCardSequence>
+        /* CSS can't do nth-child calculations , so JavaScript adds all CSS rules to display cards as a sequence */
+    </style>
+
+    <style id=DropLocations>
+        /* JavaScript dynamicall adds rules where a dragging card can be dropped */
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <cardts-zone id=CardtsHeader>
+            <!-- Cardts with Title Letters are injected here -->
+        </cardts-zone>
+        <div style="text-align: center;">
+            <a href='https://github.com/card-ts/playingcardts'>&lt;card-t&gt;</a> Old Maid, Try Avoid Joker
+            <br>
+            Shrink zoom of browsers (rough 60%) until you see horizontal piles on bottom of screen
+        </div>
+    </header>
+    
+    <div id="status" style="text-align: center">
+        Your turn, draw a card from the player that right most
+    </div>
+    <main>
+        <!-- Here is the Game -->
+        <cardts-area id=OldMaid>
+            <div id=Deck>
+                <cardts-zone id=Stock> </cardts-zone>
+            </div>
+            <div id="player-2-piles" class="table-Piles hor-Piles"></div>
+            <div></div>
+
+            <div id="player-1-piles" class="table-Piles"></div>
+            <div id="centerPiles" class="table-Piles hor-Piles">
+                <!-- 8 sequence piles are injected here -->
+            </div>
+            <div id="player-3-piles" class="table-Piles"></div>
+
+            <div></div>
+            <div id="player-0-piles" class="table-Piles hor-Piles"></div>
+            <div></div>
+
+            <div id=DraggingPile>
+                <!-- cards being dragged / dropped into another pile -->
+            </div>
+            <div id=SelectionSequenceCards>
+                <!-- outline current card & sequence of cards -->
+            </div>
+            <div id=ClickedSequenceCards>
+                <!-- outline current card & sequence of cards -->
+            </div>
+            
+        </cardts-area>
+    </main>
+
+    <script>
+    </script>
+    <footer>&lt;card-t&gt; on GitHub: <a
+            href="https://card-ts.github.io/playingcardts/">https://card-ts.github.io/playingcardts/</a>
+    </footer>
+    <!-- Fork me on GitHub label  -->
+    <!--
+    <a style="position:fixed;top:0;right:0" href="https://github.com/card-ts/solitaire"><img width="160" height="160"
+            src="https://github.blog/wp-content/uploads/2008/12/forkme_right_red_aa0000.png?resize=160%2C160"></a>
+    -->
+    <a style="position:fixed;top:0;right:0" href="https://github.com/BlackJack255/Html_Games/tree/main/003_Old_Maid_Draw_Card">See ReadME</a>
+
+</body>
+
+</html>
+<div id=PublishDate>
+Published: 2019-06-20 10:51 
