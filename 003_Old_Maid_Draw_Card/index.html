@@ -8,6 +8,9 @@
     <script type="module" src="solitaire.js"></script>
     <link rel="stylesheet" type="text/css" href="solitaire.css" />
 
+    <!-- ref: https://getbootstrap.com/docs/5.3/getting-started/introduction/ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
     <style id=nthCardSequence>
         /* CSS can't do nth-child calculations , so JavaScript adds all CSS rules to display cards as a sequence */
     </style>
@@ -23,17 +26,17 @@
         <cardts-zone id=CardtsHeader>
             <!-- Cardts with Title Letters are injected here -->
         </cardts-zone>
-        <div style="text-align: center;">
+        <div style="text-align: center; color: white;">
             <a href='https://github.com/card-ts/playingcardts'>&lt;card-t&gt;</a> Old Maid, Try Avoid Joker
             <br>
         </div>
     </header>
 
-    <span style="text-align: center;">
+    <span style="text-align: center; color: white;">
         Shrink zoom of browsers (rough 60%) until you see horizontal piles on bottom of screen<br>
     </span>
     
-    <span id="status" style="text-align: center">
+    <span id="status" style="text-align: center; color: white;">
         Your turn, draw a card from the player that right most
     </span>
     <main>
@@ -70,7 +73,7 @@
 
     <script>
     </script>
-    <footer>&lt;card-t&gt; on GitHub: <a
+    <footer style="color: white;">&lt;card-t&gt; on GitHub: <a
             href="https://card-ts.github.io/playingcardts/">https://card-ts.github.io/playingcardts/</a>
     </footer>
     <!-- Fork me on GitHub label  -->
@@ -79,7 +82,10 @@
             src="https://github.blog/wp-content/uploads/2008/12/forkme_right_red_aa0000.png?resize=160%2C160"></a>
     -->
     <a style="position:fixed;top:0;right:0" href="https://github.com/BlackJack255/Html_Games/tree/main/003_Old_Maid_Draw_Card">See ReadME</a>
+    
 
+    <!-- ref: https://getbootstrap.com/docs/5.3/getting-started/introduction/ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 
 </html>
