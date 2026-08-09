@@ -1213,14 +1213,14 @@ async function gameRound(){
                 await sleep(pause_ms)
                 findPair(PlayerIth, player_card_last_id)
                 playerShffle(PlayerIth)
-                let is_win = discard_all(PlayerIth)
+                console.log(`before check discard, i:${i}, target: ${PlayerIth.target_id}, oppon:${PlayerIth.opponent_id}`)
                 let current_win = false
-                if (is_win){
-                    console.log(`${i}th player Draw to win!`)
-                    current_win = true
-                }
+                
+                // target win and self ith win could both happen in same draw
+                // check target first since target being draw, reduce card first
+                // should modify self target, oppon id first if target win
                 let target_id = PlayerIth.target_id
-                is_win = discard_all(PlayerArr[ target_id ])
+                let is_win = discard_all(PlayerArr[ target_id ])
                 if (is_win){
                     if (target_id == human_id){
                         if_human_won = true
@@ -1228,16 +1228,23 @@ async function gameRound(){
                     console.log(`target ${target_id}th player win!`)
                 }
 
+                is_win = discard_all(PlayerIth)
+                if (is_win){
+                    console.log(`${i}th player Draw to win!`)
+                    current_win = true
+                }
+                
+
                 // reveal joker if ended
                 if(game_end){
                     if(current_win){
                         loser = PlayerArr[ PlayerIth.target_id ]
-                        console.log("loser is :", PlayerIth.target_id)
+                        console.log("loser is target:", PlayerIth.target_id)
                     }
                     else{
                         // local PlayerIth will out of scope, so need re assign
                         loser = PlayerArr[i]
-                        console.log("loser is: ", i)
+                        console.log("loser is yourself: ", i)
                     }
                 }
             }
