@@ -1179,7 +1179,17 @@ async function gameRound(){
             await sleep(pause_ms)
             let is_found = findPair(PlayerArr[0], player_card_last_id)
             playerShffle(PlayerArr[0])
-            let is_win = discard_all(PlayerArr[0])
+            
+            // even human draw, target win and self win could both happen in same draw
+            // check target first since target being draw, reduce card first
+            // should modify self target, oppon id first if target win
+            let target_id = PlayerArr[0].target_id
+            let is_win = discard_all(PlayerArr[ target_id ])
+            if (is_win){
+                console.log(`target ${target_id}th player win!`)
+            }
+
+            is_win = discard_all(PlayerArr[0])
             if (is_win){
                 if_human_won = true
                 if(game_end){
@@ -1187,11 +1197,6 @@ async function gameRound(){
                     loser = PlayerArr[ PlayerArr[0].target_id ]
                 }
                 console.log(`${0}th player Draw to win!`)
-            }
-            let target_id = PlayerArr[0].target_id
-            is_win = discard_all(PlayerArr[ target_id ])
-            if (is_win){
-                console.log(`target ${target_id}th player win!`)
             }
         }
         console.log("=================================")
