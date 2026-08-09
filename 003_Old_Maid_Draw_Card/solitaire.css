@@ -24,11 +24,11 @@ body {
     display: flex;
     flex-direction: column;
     /*--cardWidth: calc(1vw*calc(99/11));*/
-    --cardWidth: calc(1vw*calc(9/11));
+    --cardWidth: calc(1vw*calc(99/11));
     /* --cardWidth: 7vw; */
     /* --cardWidth: 100%; */
     /*--cardPadding: calc(9vw/26);*/
-    --cardPadding: calc(1vw/26);
+    --cardPadding: calc(6vw/26);
     --TableBackground: green;
     --TableOffsetY: calc(var(--cardWidth)/3);
     --StockOffsetX: 2px;
@@ -46,9 +46,10 @@ body {
     background-size: cover;
 }
 
+/*@media screen and (min-width: 1280px) {*/
 @media screen and (min-width: 1280px) {
     body {
-        --cardWidth: 120px;
+        --cardWidth: 100px;
     }
 }
 
@@ -97,7 +98,7 @@ cardts-ZONE {
     /* 3 column grid */
     display: grid;
     grid-template-columns: 1fr 9fr 1fr;
-    grid-template-rows: 1fr 400px 1fr;
+    grid-template-rows: 1fr 3fr 1fr;
     /*grid-template-areas: "Deck Table Foundation";*/
     grid-column-gap: 1em;
 }
@@ -180,7 +181,7 @@ cardts-ZONE {
 
 
 #Stock {
-    min-height: calc(var(--cardWidth)*1.3);
+    min-height: calc(var(--cardWidth)*1.0);
 }
 
 #Stock :nth-child(1) {
