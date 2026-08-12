@@ -188,7 +188,12 @@ function manage_goat_gui(event){
 
     for (let i=0; i<choice_num; i++){
         var final_door = document.createElement('button')
-        final_door.textContent = `Door ${choice_id_arr[i]+1}`
+        if (choice_id_arr[i] == chosen_i){
+            final_door.textContent = `Keep Door ${choice_id_arr[i]+1}`
+        }
+        else {
+            final_door.textContent = `Switch to Door ${choice_id_arr[i]+1}`
+        }
         final_door.style.width = "auto";  // Or dynamicButton.style.width = "";
         final_door.style.height = "auto";
         final_door.value = choice_id_arr[i]
