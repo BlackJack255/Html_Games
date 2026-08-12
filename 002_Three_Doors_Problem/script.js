@@ -169,14 +169,14 @@ function manage_goat_gui(event){
         choice_str[0] = keep_str + String(chosen_i+1) + "?"
         choice_id_arr[0] = chosen_i
 
-        choice_str[1] = switch_str + String(hide_idx+1)
+        choice_str[1] = switch_str + String(hide_idx+1) + "?"
         choice_id_arr[1] = hide_idx
     }
     else {
         choice_str[0] = switch_str + String(hide_idx+1) + "?"
         choice_id_arr[0] = hide_idx
 
-        choice_str[1] = keep_str + String(chosen_i+1)
+        choice_str[1] = keep_str + String(chosen_i+1) + "?"
         choice_id_arr[1] = chosen_i
     }
 
