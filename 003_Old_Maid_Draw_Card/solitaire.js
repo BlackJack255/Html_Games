@@ -827,7 +827,7 @@ let addCardToPile = (
     try {
         if (before) card = pile.insertBefore(card, before);
         else card = pile.appendChild(card);
-        card.style.transform = `rotate(${random(6) - 3}deg) skewY(1deg)`;
+        card.style.transform = `rotate(${random(10) - 5}deg) skewY(1deg)`;
     } catch (e) {
         console.error(e, '\n', card, pile);
     }
@@ -1159,7 +1159,9 @@ function playerShffle(playerObj){
     // put cards back, skip 0th FF card
     // exist child be last one
     for (let j=0; j<pure_card.length; j++){
-        pile_i.appendChild(pure_card[j])
+        //pile_i.appendChild(pure_card[j])
+        // no need before in addCardPile
+        addCardToPile(pure_card[j], pile_i);
     }
 
     child_arr = pile_i.querySelectorAll('cardts-card')
