@@ -15,7 +15,8 @@
 
 body {
     user-select: none;
-    overflow: hidden;
+    /*overflow: hidden;*/
+    overflow: "auto";
     background: #007D3B;
     height: 100%;
     min-height: 100%;
