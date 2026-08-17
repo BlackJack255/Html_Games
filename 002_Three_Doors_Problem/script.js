@@ -231,7 +231,9 @@ function reveal(event){
     let result_str = `The door you chose is ${picked+1}, thing behind is ... a`
     if (door_arr[picked] == CAR){
         doorObj_Arr[picked].style.color = 'green'
+        doorObj_Arr[picked].style.fontWeight = "bold"
         event.target.style.color = 'green'
+        event.target.style.fontWeight = "bold"
         result_str = result_str + " car, you win!"
     }
     else{
