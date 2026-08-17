@@ -239,6 +239,7 @@ function reveal(event){
     else{
         doorObj_Arr[picked].style.color = 'red'
         doorObj_Arr[car_price_idx].style.color = 'red'
+        doorObj_Arr[car_price_idx].style.fontWeight = "bold"
         event.target.style.color = 'red'
         result_str = result_str + " goat, sorry."
     }
