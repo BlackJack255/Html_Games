@@ -212,9 +212,15 @@ function reveal(event){
     let finalChoice_Arr = finalChoice.children
     let doorObj_Arr = doorObj.children
 
+    let car_price_idx = -1
+
     for (let i=0; i<choice_num; i++){
         let idx = Number(finalChoice_Arr[i].value)
         let price_ith = price_name[ door_arr[idx] ]
+
+        if (door_arr[idx] == CAR){
+            car_price_idx = idx
+        }
         
         doorObj_Arr[idx].textContent = price_ith
         finalChoice_Arr[i].textContent = price_ith
@@ -224,9 +230,14 @@ function reveal(event){
     var picked = Number(event.target.value)
     let result_str = `The door you chose is ${picked+1}, thing behind is ... a`
     if (door_arr[picked] == CAR){
+        doorObj_Arr[picked].style.color = 'green'
+        event.target.style.color = 'green'
         result_str = result_str + " car, you win!"
     }
     else{
+        doorObj_Arr[picked].style.color = 'red'
+        doorObj_Arr[car_price_idx].style.color = 'red'
+        event.target.style.color = 'red'
         result_str = result_str + " goat, sorry."
     }
 
