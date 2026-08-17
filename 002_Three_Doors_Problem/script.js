@@ -2,6 +2,7 @@ var inputDoors = document.getElementById("input-doors")
 var startButt = document.getElementById("start-butt")
 
 const door_min = 3
+const door_max = 10
 var door_num = 3
 var door_arr = null
 
@@ -23,7 +24,7 @@ var finalResult = document.getElementById("final-result")
 function generate_door(){
     door_num = inputDoors.valueAsNumber
 
-    if(door_num >= door_min){
+    if((door_num >= door_min) && (door_num <= door_max)){
         door_arr = new Array(door_num)
 
         for (let i=0; i<door_num; i++){
@@ -44,7 +45,7 @@ function generate_door_gui(){
     let qualified = generate_door()
 
     if(!qualified){
-        doorObj.innerHTML = "Doors number need at least 3"
+        doorObj.innerHTML = "Doors number need between 3 and 10"
     }
     else{
         doorObj.replaceChildren()
