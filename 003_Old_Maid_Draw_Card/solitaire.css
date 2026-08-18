@@ -31,7 +31,7 @@ body {
     --cardPadding: calc(6vw/26);
     --TableBackground: green;
     /*--TableOffsetY: calc(var(--cardWidth)/3);*/
-    --TableOffsetY: calc(var(--cardWidth)/4);
+    --TableOffsetY: calc(var(--cardWidth)/6);
     --StockOffsetX: 2px;
     --StockOffsetY: 6px;
 
