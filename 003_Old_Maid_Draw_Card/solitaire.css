@@ -30,7 +30,8 @@ body {
     /*--cardPadding: calc(9vw/26);*/
     --cardPadding: calc(6vw/26);
     --TableBackground: green;
-    --TableOffsetY: calc(var(--cardWidth)/3);
+    /*--TableOffsetY: calc(var(--cardWidth)/3);*/
+    --TableOffsetY: calc(var(--cardWidth)/4);
     --StockOffsetX: 2px;
     --StockOffsetY: 6px;
 
@@ -71,7 +72,7 @@ main {
 cardts-card {
     float: left;
     /*width: 100%;*/
-    width: 60%;
+    width: 55%;
     cursor: grab;
     z-index: 2;
 }
@@ -99,7 +100,7 @@ cardts-ZONE {
     /* 3 column grid */
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
-    grid-template-rows: 1fr 3fr 1fr;
+    grid-template-rows: 1fr 2fr 1fr;
     /*grid-template-areas: "Deck Table Foundation";*/
     grid-column-gap: 1em;
 }
