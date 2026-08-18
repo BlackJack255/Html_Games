@@ -236,6 +236,8 @@ let initMovingPileOldMaid = (draggedElement, is_drag=true, is_piles=true) => {
 
     // steps for all cases
     DraggingPile.style.width = calculatedCardWidth;
+    console.log("in init moving, DraggingPile: ", DraggingPile)
+    console.log("it's first child: ", DraggingPile.firstElementChild)
     // no more dropLocations in old maid
     //showValidDropLocations(DraggingPile.firstElementChild);
     showValidDropZone(true)
@@ -850,9 +852,7 @@ let dealCard = (count, pile, before = false) => {
 
 var CenterPiles = document.getElementById("centerPiles")
 // fixed first
-let center_num = 9
-let center_last_id = center_num-1
-let max_discard = 6+1 // FF base card also counts
+let center_num = 4
 
 // also declare player piles here
 
@@ -863,23 +863,22 @@ let max_discard = 6+1 // FF base card also counts
 // target: int, player id to draw, not self
 // discard_id: id pile that discard on center pile
 class PlayerObj {
-    constructor(id_str, is_ver, target_id, opponent_id, discard_id, discard_max_id) {
+    constructor(id_str, is_ver, target_id, opponent_id, discard_id) {
         this.id_str = id_str;
         this.piles = document.getElementById(id_str);
         this.is_ver = is_ver
         this.target_id = target_id
         this.opponent_id = opponent_id
         this.discard_id = discard_id
-        this.discard_max_id = discard_max_id
         this.if_win = false
     }
 }
 
 var PlayerArr = new Array(player_num)
-PlayerArr[0] = new PlayerObj("player-0-piles", false, 3, 1, 2, 3)
-PlayerArr[1] = new PlayerObj("player-1-piles", true, 0, 2, 0, 1)
-PlayerArr[2] = new PlayerObj("player-2-piles", false, 1, 3, 4, 5)
-PlayerArr[3] = new PlayerObj("player-3-piles", true, 2, 0, 6, 7)
+PlayerArr[0] = new PlayerObj("player-0-piles", false, 3, 1, 1)
+PlayerArr[1] = new PlayerObj("player-1-piles", true, 0, 2, 0)
+PlayerArr[2] = new PlayerObj("player-2-piles", false, 1, 3, 2)
+PlayerArr[3] = new PlayerObj("player-3-piles", true, 2, 0, 3)
 
 // set human player id
 //human_Pile = CenterPiles;
@@ -899,11 +898,11 @@ for (let idx = 1; idx < 53; idx++) {
     // function selector, for vertical concat
     let ver_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){top: calc(${idx} * var(--TableOffsetY));z-index:${zindex}}`;
     // horizontal selector, temporary set left with offsetY(maybe some coef)
-    let hor_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){left: calc(${idx} * var(--TableOffsetY));z-index:${zindex}}`;
+    let hor_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){left: calc(${idx} * var(--TableOffsetY) * 2);z-index:${zindex}}`;
 
     
     nthCardSequence.sheet.insertRule(`${ver_selector('DraggingPile', nth - 1, idx)}`); // pile has no FF base card
-    nthCardSequence.sheet.insertRule(`${ver_selector('CenterPiles', nth, idx)}`);
+    //nthCardSequence.sheet.insertRule(`${ver_selector('CenterPiles', nth, idx)}`);
 
     // put into 
     for (let j=0; j<player_num; j++){
@@ -918,6 +917,17 @@ for (let idx = 1; idx < 53; idx++) {
     nth++;
     zindex += 2;
 }
+
+// centerpiles as waste, only last few appears
+let cardcount = 3;
+nth = cardcount;
+for (let idx = 1; idx < cardcount+1; idx++) {
+    // function selector, for vertical concat
+    let ver_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-last-child(${nthChild}){top: calc(${idx} * var(--TableOffsetY));}`;
+
+    nthCardSequence.sheet.insertRule(`${ver_selector('CenterPiles', nth--)}`);
+}
+
 
 function sleep(ms) {
     let promise_i = new Promise(resolve => setTimeout(resolve, ms));
@@ -1124,18 +1134,6 @@ function findPair(playerObj, pivot_idx){
         discardPile.appendChild(pivot_card)
         discardPile.appendChild(found_card)
 
-        let discard_length = discardPile.childElementCount
-        if ((playerObj.discard_id < center_last_id) && (discard_length >= max_discard)){
-            if(playerObj.discard_id < playerObj.discard_max_id){
-                playerObj.discard_id += 1
-            }
-            else{
-                playerObj.discard_id = center_last_id
-            }
-        }
-        else{
-            console.log("still not exceed max, discard length: ", discard_length)
-        }
     }
 
     return is_found
@@ -1285,7 +1283,11 @@ async function gameRound(){
 
 
 // create dummy div to calculate
-let dummyPile = document.createElement('CARDTS-ZONE');
-if (dummyPile.children.length == 0) dummyPile.appendChild(newCard('FF'));
-let calculatedCardWidth = getComputedStyle(dummyPile.firstElementChild).width;
+//let dummyPile = CenterPiles.children[0]
+//if (dummyPile.children.length == 0) dummyPile.appendChild(newCard('FF'));
+//let calculatedCardWidth = getComputedStyle(dummyPile.firstElementChild).width;
+
+// direct get width from cards of player 3
+let calculatedCardWidth = PlayerArr[3].piles.getBoundingClientRect().width
+console.log(`giet boundingRect width: ${calculatedCardWidth}`)
 
