@@ -899,8 +899,7 @@ for (let idx = 1; idx < 53; idx++) {
     // function selector, for vertical concat
     let ver_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){top: calc(${idx} * var(--TableOffsetY));z-index:${zindex}}`;
     // horizontal selector, temporary set left with offsetY(maybe some coef)
-    //let hor_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){left: calc(${idx} * var(--TableOffsetY));z-index:${zindex}}`;
-    let hor_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){left: calc(${idx} * var(--TableOffsetY)*2);z-index:${zindex}}`;
+    let hor_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){left: calc(${idx} * var(--TableOffsetY));z-index:${zindex}}`;
 
     
     nthCardSequence.sheet.insertRule(`${ver_selector('DraggingPile', nth - 1, idx)}`); // pile has no FF base card
