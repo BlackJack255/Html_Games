@@ -1,7 +1,7 @@
 # Old Maid &lt;card-t> UI drag &amp; drop or Click &amp; drop game
 
 
-### Right most player's card can be moved to your piles(the bottom pile)
+### Right most player's card can be moved to your piles(bottom piles)
 
 ## Game process:
 
