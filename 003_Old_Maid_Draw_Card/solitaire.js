@@ -850,9 +850,9 @@ let dealCard = (count, pile, before = false) => {
 
 var CenterPiles = document.getElementById("centerPiles")
 // fixed first
-let center_num = 9
+let center_num = 13
 let center_last_id = center_num-1
-let max_discard = 6+1 // FF base card also counts
+let max_discard = 4+1 // FF base card also counts
 
 // also declare player piles here
 
@@ -876,10 +876,10 @@ class PlayerObj {
 }
 
 var PlayerArr = new Array(player_num)
-PlayerArr[0] = new PlayerObj("player-0-piles", false, 3, 1, 2, 3)
-PlayerArr[1] = new PlayerObj("player-1-piles", true, 0, 2, 0, 1)
-PlayerArr[2] = new PlayerObj("player-2-piles", false, 1, 3, 4, 5)
-PlayerArr[3] = new PlayerObj("player-3-piles", true, 2, 0, 6, 7)
+PlayerArr[0] = new PlayerObj("player-0-piles", false, 3, 1, 3, 5)
+PlayerArr[1] = new PlayerObj("player-1-piles", true, 0, 2, 0, 2)
+PlayerArr[2] = new PlayerObj("player-2-piles", false, 1, 3, 6, 8)
+PlayerArr[3] = new PlayerObj("player-3-piles", true, 2, 0, 9, 11)
 
 // set human player id
 //human_Pile = CenterPiles;
@@ -900,7 +900,7 @@ for (let idx = 1; idx < 53; idx++) {
     let ver_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){top: calc(${idx} * var(--TableOffsetY));z-index:${zindex}}`;
     // horizontal selector, temporary set left with offsetY(maybe some coef)
     //let hor_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){left: calc(${idx} * var(--TableOffsetY));z-index:${zindex}}`;
-    let hor_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){left: calc(${idx} * var(--TableOffsetY)*2);z-index:${zindex}}`;
+    let hor_selector = (id, nthChild) => `#${id} CARDTS-CARD:nth-child(${nthChild}){left: calc(${idx} * var(--TableOffsetY)*1.5);z-index:${zindex}}`;
 
     
     nthCardSequence.sheet.insertRule(`${ver_selector('DraggingPile', nth - 1, idx)}`); // pile has no FF base card

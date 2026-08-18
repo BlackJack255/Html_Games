@@ -24,14 +24,14 @@ body {
     display: flex;
     flex-direction: column;
     /*--cardWidth: calc(1vw*calc(99/11));*/
-    --cardWidth: calc(1vw*calc(99/11));
+    --cardWidth: calc(1vw*calc(79/11));
     /* --cardWidth: 7vw; */
     /* --cardWidth: 100%; */
     /*--cardPadding: calc(9vw/26);*/
     --cardPadding: calc(6vw/26);
     --TableBackground: green;
     /*--TableOffsetY: calc(var(--cardWidth)/3);*/
-    --TableOffsetY: calc(var(--cardWidth)/3.7);
+    --TableOffsetY: calc(var(--cardWidth)/4.5);
     --StockOffsetX: 2px;
     --StockOffsetY: 6px;
 
@@ -71,7 +71,7 @@ main {
 
 cardts-card {
     float: left;
-    width: 100%;
+    width: 110%;
     cursor: grab;
     z-index: 2;
 }
@@ -98,9 +98,9 @@ cardts-ZONE {
 #OldMaid {
     /* 3 column grid */
     display: grid;
-    grid-template-columns: 1fr 9fr 1fr;
+    grid-template-columns: 1fr 13fr 1fr;
     /*grid-template-rows: 1fr 3fr 1fr;*/
-    grid-template-rows: 1fr 2.5fr 1fr;
+    grid-template-rows: 1fr 1.8fr 1fr;
     /*grid-template-areas: "Deck Table Foundation";*/
     grid-column-gap: 1em;
 }
@@ -210,7 +210,7 @@ cardts-ZONE {
 
 /* follow oldmaid */
 .hor-Piles {
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(13, 1fr);
     grid-template-rows: 1fr;
     grid-template-areas: ". . . . . . . . .";
     grid-gap: 6px;
