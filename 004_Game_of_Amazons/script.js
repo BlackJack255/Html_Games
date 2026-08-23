@@ -610,8 +610,17 @@
         console.log(`selected: ${selected}`)
     }
 
+    function clickBoard(e){
+        const sq = e.target.closest(".square");
+        if (!sq) return;
+        const r = parseInt(sq.dataset.row, 10);
+        const c = parseInt(sq.dataset.col, 10);
+        onSquareClick(r, c);
+    }
     // assign click function to board
+    // prevent add duplicate
     function bindBoard() {
+        /*
         boardEl.addEventListener("click", (e) => {
         const sq = e.target.closest(".square");
         if (!sq) return;
@@ -619,6 +628,8 @@
         const c = parseInt(sq.dataset.col, 10);
         onSquareClick(r, c);
         });
+        */
+        boardEl.addEventListener("click", clickBoard);
     }
 
     // very first calling, main function like
