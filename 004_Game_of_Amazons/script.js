@@ -591,7 +591,6 @@
                 game.validArrows = game.getLegalMoves(r, c, ifArrow);
             }
             else{
-                console.log("failed to arrow aim")
                 game.selected = null;
             }
             //selected = null;
@@ -607,7 +606,6 @@
             game.validMoves = game.getLegalMoves(r, c);
         }
         render();
-        console.log(`selected: ${selected}`)
     }
 
     function clickBoard(e){
