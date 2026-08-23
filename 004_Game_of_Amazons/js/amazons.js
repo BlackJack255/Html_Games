@@ -28,13 +28,15 @@ let rows_num = 5;
 
 //const mcts = require('mcts');
 
-exports.Action = function(fromR, fromC, toR, toC, promotionType) {
+exports.Action = function(fromR, fromC, toR, toC, arrowR, arrowC, promotionType) {
     mcts.Action.call(this);
 
     this.fromR = fromR;
     this.fromC = fromC;
     this.toR = toR;
     this.toC = toC;
+    this.arrowR = arrowR;
+    this.arrowC = arrowC;
     this.promotionType = promotionType;
 
     // arrow R, C
