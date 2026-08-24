@@ -372,7 +372,7 @@ exports.Game.prototype.getLegalMoves = function (r, c, ifArrow=false){
 
 
 // original function: getAllMoves()
-exports.Game.prototype.getAllMovess = function(color) {
+exports.Game.prototype.getAllMoves = function(color) {
     const moves = [];
 
     if (color == null){
@@ -401,18 +401,18 @@ exports.Game.prototype.isCheck = function (color) {
 
 exports.Game.prototype.isCheckmate = function(color) {
     //return isCheck(color) && getAllMoves(color).length === 0;
-    return this.isCheck(color) && this.getAllMovess(color).length === 0;
+    return this.isCheck(color) && this.getAllMoves(color).length === 0;
 }
 
 exports.Game.prototype.isStalemate = function(color) {
     //return !isCheck(color) && getAllMoves(color).length === 0;
-    return !this.isCheck(color) && this.getAllMovess(color).length === 0;
+    return !this.isCheck(color) && this.getAllMoves(color).length === 0;
 }
 */
 
 // amazons check win
 exports.Game.prototype.allBlocked = function(color) {
-    return this.getAllMovess(color).length === 0;
+    return this.getAllMoves(color).length === 0;
 }
 
 // original function: makeMove()
