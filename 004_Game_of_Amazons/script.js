@@ -413,7 +413,8 @@
                     sq.classList.add(piece.color === "w" ? "white" : "black");
 
                     if(piece.type == ARROW_TYPE){
-                        sq.classList.add("gray");
+                        //sq.classList.add("gray");
+                        sq.style.color="#797979";
                     }
                 }
 
