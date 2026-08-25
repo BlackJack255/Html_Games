@@ -427,6 +427,7 @@
         render();
         updateTurnLabel();
         afterMove();
+        msgP.textContent = "Your turn"
     }
 
     // plot, draw html css?
