@@ -411,9 +411,6 @@
 
     function computerMove_continue(state) {
         var now = Date.now();
-        if(now-state.startTime >= maxTime){
-            return;
-        }
         if (now-state.startTime < maxTime && ai.continueThinking(state, 1000)) {
           //$("#msg").text("Thinking... ("+Math.ceil((maxTime-(now-state.startTime))/1000)+"s)");
           msgP.textContent = "Thinking... ("+Math.ceil((maxTime-(now-state.startTime))/1000)+"s)";
