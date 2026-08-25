@@ -8,9 +8,9 @@ Game of Amazons
 
 1. choose one of your piece
 
-2. move piece by click valid block
+2. move piece by clicking valid block
 
-3. shoot arrow from moved piece, by click valid block
+3. shoot arrow from moved piece, by clicking valid block
 
 
 ## References, Modify from
