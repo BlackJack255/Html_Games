@@ -26,7 +26,7 @@ const arrowColor = "g"
 let cols_num = 4;
 let rows_num = 5;
 
-//const mcts = require('mcts');
+const mcts = require('mcts');
 
 exports.Action = function(fromR, fromC, toR, toC, arrowR, arrowC, promotionType) {
     mcts.Action.call(this);
@@ -50,26 +50,31 @@ exports.Game = function(o) {
     if (o instanceof exports.Game) {
         // copy constructor like
 
-        //mcts.Game.call(this, o);
+        mcts.Game.call(this, o);
         this.board = structuredClone(o.board)
 
         this.turn = o.turn;
-        this.selected = o.selected;
-        this.validMoves = o.validMoves;
-        this.arrowAimed = o.arrowAimed;
-        this.validArrows = o.validArrows;
+        this.selected = structuredClone(o.selected);
+        this.validMoves = structuredClone(o.validMoves);
+        this.arrowAimed = structuredClone(o.arrowAimed);
+        this.validArrows = structuredClone(o.validArrows);
         /*
         this.kingMoved = o.kingMoved;
         this.rookMoved = o.rookMoved;
         */
-        this.lastMove = o.lastMove;
-        this.lastMoveFrom = o.lastMoveFrom;
+        this.lastMove = structuredClone(o.lastMove);
+        this.lastMoveFrom = structuredClone(o.lastMoveFrom);
         //this.pendingPromotion = o.pendingPromotion;
         this.gameOver = this.gameOver;
+
+        this.beCheck = o.beCheck;
+        this.wIsWon = o.wIsWon;
+        this.bIsWon = o.bIsWon;
+        this.draw = o.draw;
     }
     else{
         // direct follow mcts, no need change
-        //mcts.Game.call(this, { nPlayers: 2 });
+        mcts.Game.call(this, { nPlayers: 2 });
 
         // initialize board related variables
         let center_rows_num = rows_num - 2*2
@@ -116,6 +121,12 @@ exports.Game = function(o) {
 
     }
 }
+
+exports.Game.prototype = Object.create(mcts.Game.prototype);
+
+exports.Game.prototype.copyGame = function() {
+    return new exports.Game(this);
+};
 
 function inBounds(r, c) {
     return r >= 0 && r < rows_num && c >= 0 && c < cols_num;
@@ -391,6 +402,45 @@ exports.Game.prototype.getAllMoves = function(color) {
     return moves;
 }
 
+
+// all actions
+// no input var needed
+exports.Game.prototype.allActions = function() {
+    let turn = this.turn
+    let promotionType = null;
+
+    var as = [];
+
+    // there are fromR fromC
+    // getAllMoves
+    let allMoves = this.getAllMoves(turn)
+
+    //for loop
+    for (const moveIth of allMoves){
+        let from_RC = moveIth.from
+        let to_RC = moveIth.to
+        let [fromR, fromC] = from_RC
+        let [toR, toC] = to_RC
+
+        // assign virtual this.selected
+        this.selected = [fromR, fromC];
+        
+        // getLegalMoves
+        let ifArrow = true
+        let allArrows = this.getLegalMoves(toR, toC, ifArrow)
+
+        for (const [aR, aC] of allArrows){
+            as.push(new exports.Action(fromR, fromC, toR, toC, aR, aC, promotionType));
+        }
+
+        
+    }
+
+    // cancel this.selected
+    this.selected = null;
+    return as;
+}
+
 /*
 exports.Game.prototype.isCheck = function (color) {
     //const k = getKingPos(color);
@@ -505,10 +555,16 @@ exports.Game.prototype.doAction = function(a) {
     if (this.allBlocked(this.turn)) {
         if(this.turn == "w"){
             this.bIsWon = true;
+            this.winner = 2;
         }
         else{
             this.wIsWon = true;
+            this.winner = 1;
         }
+    }
+    else {
+        this.currentTurn++;
+        this.currentPlayer = (this.currentPlayer%2)+1
     }
 
     return true;

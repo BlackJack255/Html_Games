@@ -43,6 +43,12 @@
             <span class="mode-badge" id="modeBadge">Vs Friend</span>
             <button type="button" id="newGameBtn" class="btn">New Game</button>
             <button type="button" id="changeModeBtn" class="btn btn-ghost">Change Mode</button>
+            
+            <br>
+            Computer <select id="computerplayer">
+              <option value="1">Player 1</option>
+              <option value="2" selected>Player 2</option>
+            </select>
           </div>
         </header>
 
@@ -61,10 +67,29 @@
             <button type="button" id="playAgainBtn" class="btn btn-large">Play Again</button>
           </div>
         </div>
+
+        <!-- only AI mode visible-->
+        <div id="settings" align="center">
+          Max search trials <select id="maxtrials">
+            <option value="10" selected>10</option>
+            <option value="100">100</option>
+            <option value="1000">1000</option>
+            <option value="10000">10000</option>
+            <option value="100000">100000</option>
+          </select>
+          <br/>
+          Max search time <select id="maxtime">
+            <option value="1000" selected>1 sec</option>
+            <option value="10000">10 sec</option>
+          </select>
+        </div>
+        <p id="msg" class="text-center"></p>
+        <div id="searchdata" style="width: 100%; max-width: 400px; margin: auto; text-align: center;"></div>
       </div>
     </div>
 
     <script src="js/nodehack.js"></script>
+    <script src="js/mcts.js"></script>
     <script src="js/amazons.js"></script>
     <script src="script.js"></script>
   </body>

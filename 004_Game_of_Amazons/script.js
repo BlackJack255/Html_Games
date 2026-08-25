@@ -1,8 +1,18 @@
 (function () {
     "use strict";
 
+    const mcts = require('mcts');
     const amazons = require("amazons")
     let game = null;
+    let ai = null;
+    let ai_turn = null;
+
+    var humanPlayer = 1;
+    var computerPlayer = 2;
+
+    var maxTrials = 1000;
+    var maxTime = 1000;
+    var timer;
 
     // only need queen and arrow
     const ARROW_TYPE = "A"
@@ -47,6 +57,10 @@
     const gameOverOverlay = document.getElementById("gameOverOverlay");
     const gameOverTitle = document.getElementById("gameOverTitle");
     const gameOverMessage = document.getElementById("gameOverMessage");
+
+    const computerplayerTurn = document.getElementById("computerplayer");
+    const msgP = document.getElementById("msg");
+    const searchData = document.getElementById("searchdata");
 
     // control html board size
     // copy ones to require amazons.js?
@@ -378,6 +392,39 @@
     }
     */
 
+    
+    // original function getBestMoves
+    function computerMove() {
+        var state = ai.startThinking(game);
+        state.startTime = Date.now();
+        timer = window.setTimeout(function() {
+          computerMove_continue(state)
+        }, 0);
+        console.log("finished move so quickly?")
+    }
+
+    function computerMove_continue(state) {
+        var now = Date.now();
+        console.log("time: ", now-state.startTime)
+        if(now-state.startTime >= maxTime){
+            return;
+        }
+        if (now-state.startTime < maxTime && ai.continueThinking(state, 1000)) {
+          //$("#msg").text("Thinking... ("+Math.ceil((maxTime-(now-state.startTime))/1000)+"s)");
+          msgP.textContent = "Thinking... ("+Math.ceil((maxTime-(now-state.startTime))/1000)+"s)";
+          timer = window.setTimeout(function() {
+            computerMove_continue(state)
+          }, 0);
+          return;
+        }
+        var a = ai.stopThinking(state);
+        console.log("computer move: ", a)
+        game.doAction(a);
+        render();
+        updateTurnLabel();
+        afterMove();
+    }
+
     // plot, draw html css?
     function render(init=false) {
         // set board css style
@@ -469,6 +516,7 @@
     }
     */
 
+    // can't be recursive, since mcts ai only be called once
     function afterMove() {
         let turn = game.turn;
 
@@ -507,7 +555,10 @@
 
         // deal makemove after ai mcts activated
         // very similar as computerMove
-        if (mode === "ai" && turn === "b") {
+        // fixed computer black, should let computer turn be var
+        console.log("current player: ", game.currentPlayer)
+        if (mode === "ai" && game.currentPlayer == computerPlayer) {
+            /*
             setTimeout(() => {
                 const move = getBestMove(2);
                 if (move) {
@@ -518,11 +569,19 @@
                 } else {
                     makeMove(move.from[0], move.from[1], move.to[0], move.to[1]);
                 }
+
+                // draw, update html
                 render();
                 updateTurnLabel();
                 afterMove();
                 }
             }, 300);
+            */
+
+            // ai computerMove(will call computer continue, game.do action)
+            console.log("start ai mode")
+            computerMove();
+            // draw, update html
         }
     }
 
@@ -537,7 +596,8 @@
 
         //if (gameOver || pendingPromotion) return;
         if (gameOver) return;
-        if (mode === "ai" && turn === "b") return;
+        //if (mode === "ai" && turn === "b") return;
+        if (mode === "ai" && game.currentPlayer == computerPlayer) return ;
 
         //const piece = getPiece(r, c);
         const piece = game.getPiece(r, c);
@@ -631,6 +691,50 @@
         boardEl.addEventListener("click", clickBoard);
     }
 
+    function newGame(){
+        game = new amazons.Game();
+        let init = true
+        render(init);
+        updateTurnLabel();
+
+        // mode already global variable
+        if(mode == "ai"){
+            ai = new mcts.MCTSPlayer({ nTrials: maxTrials });
+
+            computerPlayer = computerplayerTurn.value
+            if (computerPlayer == 1) {
+                ai_turn = "w"
+            }
+            else{
+                ai_turn = "b"
+            }
+            humanPlayer = (computerPlayer%2)+1;
+
+
+            ai.searchCallback = function(state) {
+                var data = "["+state.root.count+" trials; "+state.time+" msecs]\n";
+                for (var i = 0; i < state.root.children.length; i++) {
+                    var n = state.root.children[i];
+                    data += (n === state.best?"*":" ")+" "+n.toString()+"\n";
+                }
+                if (state.best) {
+                    data += "avgSearchDepth "+state.avgSearchDepth.toFixed(4)+
+                            "\navgGameDepth "+state.avgGameDepth.toFixed(4)+
+                            "\navgBranchingFactor "+state.avgBranchingFactor.toFixed(4)+
+                            "\n";
+                }
+                //$("#searchdata").html("<pre>"+data+"</pre>");
+                searchData.innerHTML = "<pre>"+data+"</pre>";
+            };
+
+            if(ai_turn == "w"){
+                // rotate board
+                game.board = game.board.reverse()
+                afterMove()
+            }
+        }
+    }
+
     // very first calling, main function like
     function showGame(m) {
         mode = m;
@@ -638,10 +742,10 @@
         gameScreen.classList.remove("hidden");
         modeBadge.textContent = m === "ai" ? "Vs AI" : "Vs Friend";
         //initBoard();
-        game = new amazons.Game();
-        let init = true
-        render(init);
-        updateTurnLabel();
+        //let init = true
+        //render(init);
+        //updateTurnLabel();
+        newGame();
         bindBoard();
     }
 
@@ -650,10 +754,10 @@
 
     document.getElementById("newGameBtn").addEventListener("click", () => {
         //initBoard();
-        game = new amazons.Game();
-        let init = true
-        render(init);
-        updateTurnLabel();
+        //let init = true
+        //render(init);
+        //updateTurnLabel();
+        newGame();
         gameOverOverlay.classList.add("hidden");
     });
 
@@ -670,5 +774,18 @@
         gameOverOverlay.classList.add("hidden");
         game = null;
     });
+
+
+    document.getElementById("maxtrials").addEventListener("change", (event) => {
+        maxTrials = event.target.value;
+        if(ai){
+            ai.nTrials = maxTrials;
+        }
+    });
+
+    document.getElementById("maxtime").addEventListener("change", (event) => {
+        maxTime = event.target.value
+    });
+
 
 })();
