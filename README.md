@@ -8,3 +8,6 @@ Contents of html games, with demos to play
 2. Three Doors Problem [(Demo)](https://blackjack255.github.io/Html_Games/002_Three_Doors_Problem/)
 
 3. Old Maid (avoid draw Joker) [(Demo)](https://blackjack255.github.io/Html_Games/003_Old_Maid_Draw_Card/)
+
+4. Game of Amazons [(Demo)](https://blackjack255.github.io/Html_Games/004_Game_of_Amazons/)
+
