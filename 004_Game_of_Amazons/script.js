@@ -407,12 +407,10 @@
         timer = window.setTimeout(function() {
           computerMove_continue(state)
         }, 0);
-        console.log("finished move so quickly?")
     }
 
     function computerMove_continue(state) {
         var now = Date.now();
-        console.log("time: ", now-state.startTime)
         if(now-state.startTime >= maxTime){
             return;
         }
@@ -425,7 +423,6 @@
           return;
         }
         var a = ai.stopThinking(state);
-        console.log("computer move: ", a)
         game.doAction(a);
         render();
         updateTurnLabel();
@@ -565,7 +562,6 @@
         // deal makemove after ai mcts activated
         // very similar as computerMove
         // fixed computer black, should let computer turn be var
-        console.log("current player: ", game.currentPlayer)
         if (mode === "ai" && game.currentPlayer == computerPlayer) {
             /*
             setTimeout(() => {
@@ -588,7 +584,6 @@
             */
 
             // ai computerMove(will call computer continue, game.do action)
-            console.log("start ai mode")
             if (prevSearchDataTurn < game.currentTurn) {
                 prevSearchDataTurn = game.currentTurn;
                 prevSearchData = "";
