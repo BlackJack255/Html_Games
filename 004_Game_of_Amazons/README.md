@@ -1,0 +1,20 @@
+Game of Amazons
+
+
+### Block opponent's all moves to win
+
+
+## Game process:
+
+1. choose one of your piece
+
+2. move piece by click valid block
+
+3. shoot arrow from moved piece, by click valid block
+
+
+## References, Modify from
+
+* [he-is-talha/html-css-javascript-games/03-Chess-Game github](https://github.com/he-is-talha/html-css-javascript-games/tree/main)
+
+* [grwhitehead/jsmcts github](https://github.com/grwhitehead/jsmcts)
