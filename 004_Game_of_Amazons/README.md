@@ -12,6 +12,8 @@ Game of Amazons
 
 3. shoot arrow from moved piece, by clicking valid block
 
+## Run [Html demo](https://blackjack255.github.io/Html_Games/004_Game_of_Amazons/)
+
 
 ## References, Modify from
 
