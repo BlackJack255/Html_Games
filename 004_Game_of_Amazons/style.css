@@ -94,6 +94,81 @@ body {
   font-size: 1.5rem;
 }
 
+/* ----- Game screen ----- */
+.game-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.game-screen .header {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.game-screen .header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.game-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.turn-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.mode-badge {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  color: var(--text);
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-large {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
 
 
 
@@ -169,4 +244,12 @@ body {
 
 .square.dragging {
   opacity: 0.85;
+}
+
+
+/* ----- Selcet menu -----*/
+
+.select {
+  background: var(--bg-card);
+  color: white;
 }

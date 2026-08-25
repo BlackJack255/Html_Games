@@ -44,6 +44,13 @@ exports.Action = function(fromR, fromC, toR, toC, arrowR, arrowC, promotionType)
 
 //exports.Action.prototype = Object.create(mcts.Action.prototype);
 
+exports.Action.prototype.toString = function() {
+    s = ""+ `[${this.fromR}, ${this.fromC}]`;
+    s += "->"+ `[${this.toR}, ${this.toC}]`;
+    s += "=>>"+ `[${this.arrowR}, ${this.arrowC}]`;
+    return s;
+};
+
 // original function: initBoard()
 exports.Game = function(o) {
     // prepare variables as members

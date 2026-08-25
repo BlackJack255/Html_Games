@@ -10,7 +10,7 @@
     var humanPlayer = 1;
     var computerPlayer = 2;
 
-    var maxTrials = 1000;
+    var maxTrials = 1;
     var maxTime = 1000;
     var timer;
 
@@ -59,8 +59,15 @@
     const gameOverMessage = document.getElementById("gameOverMessage");
 
     const computerplayerTurn = document.getElementById("computerplayer");
+    const settingDiv = document.getElementById("settings");
     const msgP = document.getElementById("msg");
     const searchData = document.getElementById("searchdata");
+
+    maxTrials = document.getElementById("maxtrials").value
+
+    var prevSearchDataTurn = 0;
+    var prevSearchData = "";
+    var currSearchData = "";
 
     // control html board size
     // copy ones to require amazons.js?
@@ -433,6 +440,8 @@
         if(init){
             boardEl.style.gridTemplateColumns = `repeat(${cols_num}, 1fr)`;
             boardEl.style.gridTemplateRows = `repeat(${rows_num}, 1fr)`;
+
+            searchData.innerHTML = "";
         }
 
         boardEl.innerHTML = "";
@@ -580,6 +589,12 @@
 
             // ai computerMove(will call computer continue, game.do action)
             console.log("start ai mode")
+            if (prevSearchDataTurn < game.currentTurn) {
+                prevSearchDataTurn = game.currentTurn;
+                prevSearchData = "";
+            } else {
+                prevSearchData += currSearchData+"\n";
+            }
             computerMove();
             // draw, update html
         }
@@ -711,6 +726,9 @@
             humanPlayer = (computerPlayer%2)+1;
 
 
+            prevSearchDataTurn = 0;
+            prevSearchData = "";
+            currSearchData = "";
             ai.searchCallback = function(state) {
                 var data = "["+state.root.count+" trials; "+state.time+" msecs]\n";
                 for (var i = 0; i < state.root.children.length; i++) {
@@ -723,15 +741,26 @@
                             "\navgBranchingFactor "+state.avgBranchingFactor.toFixed(4)+
                             "\n";
                 }
+                currSearchData = data;
                 //$("#searchdata").html("<pre>"+data+"</pre>");
-                searchData.innerHTML = "<pre>"+data+"</pre>";
+                searchData.innerHTML = "<pre>"+prevSearchData+currSearchData+"</pre>";
             };
+
+            settingDiv.classList.remove("hidden");
+            msgP.classList.remove("hidden");
+            searchData.classList.remove("hidden");
 
             if(ai_turn == "w"){
                 // rotate board
                 game.board = game.board.reverse()
                 afterMove()
             }
+        }
+        else {
+            settingDiv.classList.add("hidden");
+            msgP.classList.add("hidden");
+            searchData.classList.add("hidden");
+
         }
     }
 
