@@ -19,4 +19,4 @@
 
 ## Modify from https://github.com/card-ts/Solitaire/
 
-### Using the &lt;card-t&gt; Custom Element from: https://github.com/card-ts/playingcardts
+### Using the &lt;card-t&gt; Custom Element from: https://github.com/cardmeister/cardmeister.github.io
