@@ -746,6 +746,7 @@
             if(ai_turn == "w"){
                 // rotate board
                 game.board = game.board.reverse()
+                render()
                 afterMove()
             }
         }
