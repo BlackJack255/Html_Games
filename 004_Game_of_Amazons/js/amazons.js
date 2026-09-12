@@ -475,6 +475,7 @@ exports.Game.prototype.allBlocked = function(color) {
 // original function: makeMove()
 // turn into one variable input? dictionary like?
 exports.Game.prototype.doAction = function(a) {
+    mcts.Game.prototype.doAction.call(this, a);
     let fromR = a.fromR;
     let fromC = a.fromC;
     let toR = a.toR;
