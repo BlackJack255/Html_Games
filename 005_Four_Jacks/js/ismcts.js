@@ -18,6 +18,40 @@ const mcts = require('mcts');
 Object.assign(exports, mcts)
 
 
+exports.Game.perfect_info = false
+
+// prepare hidden informations
+// after that, now full game information determined
+// implement on game script
+exports.Game.prototype.determinize = function(){
+};
+
+
+// determinize related to allAction
+
+// deep comparison functions
+// https://www.syncfusion.com/blogs/post/deep-compare-javascript-objects
+
+function isObject(x) {
+    return x !== null && typeof x === 'object';
+}
+
+function deepEqual(a, b) {
+    if (Object.is(a, b)) return true; // handles NaN and -0 correctly
+    if (!isObject(a) || !isObject(b)) return false;
+
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+
+    if (aKeys.length !== bKeys.length) return false;
+
+    for (const key of aKeys) {
+        if (!Object.prototype.hasOwnProperty.call(b, key)) return false;
+        if (!deepEqual(a[key], b[key])) return false;
+    }
+
+    return true;
+}
 
 
 
@@ -32,12 +66,33 @@ exports.MCTSNode.prototype.selectChild = function(c, determinedActions=null) {
     var sv;
     for (var i = 0; i < this.children.length; i++) {
         var a = this.children[i];
-        var v = (1.0*a.values[a.player-1])/(1+a.count)
-            + c*Math.sqrt(Math.log(1+this.count)/(1+a.count))
-            + Math.random()*1e-6;
-        if (sa == null || v > sv) {
-            sa = a;
-            sv = v;
+        // children from all determinized combinations, large collection
+        // check if child action in the determinedActions(one subset from all determinize) or not
+        // early process still maybe not found fit, return null, it's normal
+        // should at least one child be inside in later process
+        let action = a.action
+        let found = false
+
+        if (determinedActions != null){
+            // consider prevent null determinedActions?
+            let compare_len = determinedActions.length
+            for (let i=0; i<compare_len && !found; i++){
+                found = deepEqual(action, determinedActions[i])
+            }
+        }
+        else {
+            found = true
+        }
+
+        // only child action in determinedAction counts
+        if (found) {
+            var v = (1.0*a.values[a.player-1])/(1+a.count)
+                + c*Math.sqrt(Math.log(1+this.count)/(1+a.count))
+                + Math.random()*1e-6;
+            if (sa == null || v > sv) {
+                sa = a;
+                sv = v;
+            }
         }
     }
     return sa;
@@ -52,6 +107,11 @@ exports.MCTSPlayer.prototype.startThinking = function(g) {
     root.parentNodeCount = 0;
     root.totalNodeCount = 1;
     if (!root.children) {
+        // determinize, set hidden information
+        // currentPlayer's info be consistant, should no worry
+        if (!g.perfect_info) {
+            g.determinize()
+        }
         root.children = g.allActions().map(function (a) { return new exports.MCTSNode(g, a) });
         root.parentNodeCount += 1;
         root.totalNodeCount += root.children.length;
@@ -92,14 +152,35 @@ exports.MCTSPlayer.prototype.continueThinking = function(state, nt) {
             tg = g.copyGame();
         }
         var vns = [root]; // track visited nodes
+
+        // determinize, set hidden information
+        // make sure draw table ready before g.copyGame(), before continueThinking
+        if (!tg.perfect_info) {
+            tg.determinize()
+        }
+
         // select next child to explore
-        var n = root.selectChild(this.c);
+        var n = null;
+        if(!tg.perfect_info){ 
+            n = root.selectChild(this.c, tg.allActions());
+            //n = root.selectChild(this.c);
+        }
+        else{
+            n = root.selectChild(this.c);
+        }
         vns.push(n);
         tg.doAction(n.action);
         var depth = 1;
         // repeat to frontier of explored game tree
         while (!tg.isGameOver() && n.children) {
-            n = n.selectChild(this.c);
+            if(!tg.perfect_info){ 
+                n = n.selectChild(this.c, tg.allActions());
+                //n = n.selectChild(this.c);
+            }
+            else{
+                // all children must be valid in perfect information
+                n = n.selectChild(this.c);
+            }
             vns.push(n);
             tg.doAction(n.action);
             depth += 1;
@@ -109,7 +190,13 @@ exports.MCTSPlayer.prototype.continueThinking = function(state, nt) {
             n.children = tg.allActions().map(function (a) { return new exports.MCTSNode(tg, a) });
             root.parentNodeCount += 1;
             root.totalNodeCount += n.children.length;
-            n = n.selectChild(this.c);
+            if(!tg.perfect_info){ 
+                n = n.selectChild(this.c, tg.allActions());
+                //n = n.selectChild(this.c);
+            }
+            else{
+                n = n.selectChild(this.c);
+            }
             vns.push(n);
             tg.doAction(n.action);
             depth += 1;
