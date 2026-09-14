@@ -192,28 +192,43 @@
     function afterMove(event) {
         if(human_turn){
             let card_rank = event.target.value
-            let human_action = new cardgame.Action(card_rank)
-            game.doAction(human_action, real_play)
 
-            // print on html
-            current_plays.innerHTML += `&nbsp; ${card_rank} &nbsp;||`
-
-            if(game.currentPlayer == 1) {
-                current_plays.innerHTML += `<br>`
+            // check if in allActions
+            let human_allAct = game.humanActions()
+            let allow = false
+            for(let i=0; i<human_allAct.length && !allow ; i++){
+                let card_i = human_allAct[i].card_rank
+                if(card_rank == card_i){
+                    allow = true
+                }
             }
+            if(allow){
+                let human_action = new cardgame.Action(card_rank)
+                game.doAction(human_action, real_play)
 
-            // human_id + 1 to finish a trick
-            // card_count continues
-            // no more lead
-            let card_count = human_id - start_idx
-            if(card_count < 0){
-                card_count = card_count + player_num
+                // print on html
+                current_plays.innerHTML += `&nbsp; ${card_rank} &nbsp;||`
+
+                if(game.currentPlayer == 1) {
+                    current_plays.innerHTML += `<br>`
+                }
+
+                // human_id + 1 to finish a trick
+                // card_count continues
+                // no more lead
+                let card_count = human_id - start_idx
+                if(card_count < 0){
+                    card_count = card_count + player_num
+                }
+
+                human_turn = false
+                event.target.disabled = true
+
+                oneCard(card_count+1, start_idx)
             }
-
-            human_turn = false
-            event.target.disabled = true
-
-            oneCard(card_count+1, start_idx)
+            else{
+                console.log(`choose another card, need follow suit`)
+            }
         }
         else{
             console.log(`human_turn?$ {human_turn}, consider click Next Trick first`)

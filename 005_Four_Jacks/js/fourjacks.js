@@ -594,6 +594,12 @@ exports.Game.prototype.allActions = function () {
     return as
 }
 
+exports.Game.prototype.humanActions = function () {
+    // need var to cross scope
+    var as = findValid(this.currentPlayer-1, this.lead_suit, this.hand_table)
+
+    return as
+}
 
 // just test, no need in future
 exports.Game.prototype.pick_a_card = function () {
