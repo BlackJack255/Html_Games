@@ -172,22 +172,41 @@ exports.MCTSPlayer.prototype.continueThinking = function(state, nt) {
         tg.doAction(n.action);
         var depth = 1;
         // repeat to frontier of explored game tree
-        while (!tg.isGameOver() && n.children) {
+        // not only n.children non-empty, but also check n.children is found in tg.allActions
+        let found_inActions = true
+        while (!tg.isGameOver() && found_inActions && n.children) {
+            var temp_n = null
             if(!tg.perfect_info){ 
-                n = n.selectChild(this.c, tg.allActions());
+                temp_n = n.selectChild(this.c, tg.allActions());
                 //n = n.selectChild(this.c);
             }
             else{
                 // all children must be valid in perfect information
                 n = n.selectChild(this.c);
             }
-            vns.push(n);
-            tg.doAction(n.action);
-            depth += 1;
+            if(temp_n != null){
+                n = temp_n
+                vns.push(n);
+                tg.doAction(n.action);
+                depth += 1;
+            }
+            else{
+                found_inActions = false
+            }
         }
         // if game isn't over, expand frontier node and select a child to explore
         if (!tg.isGameOver()) {
-            n.children = tg.allActions().map(function (a) { return new exports.MCTSNode(tg, a) });
+            // although n must be non null
+            // since n.children may not null
+            // if not null, append
+            if(n.children != null){
+                var new_children = tg.allActions().map(function (a) { return new exports.MCTSNode(tg, a) });
+                n.children.push(...new_children)
+            }
+            else{
+                n.children = tg.allActions().map(function (a) { return new exports.MCTSNode(tg, a) });
+            }
+            
             root.parentNodeCount += 1;
             root.totalNodeCount += n.children.length;
             if(!tg.perfect_info){ 
@@ -197,6 +216,7 @@ exports.MCTSPlayer.prototype.continueThinking = function(state, nt) {
             else{
                 n = n.selectChild(this.c);
             }
+            // no need check, since new children appended
             vns.push(n);
             tg.doAction(n.action);
             depth += 1;
