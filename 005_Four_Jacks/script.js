@@ -17,11 +17,20 @@
 
     const human_id = 4-1
 
+    // have card
+    const USED = 1
+    const VALID = 0
+
+    let start_idx = -1
+    let human_turn = false
+
     var nextTrick = document.getElementById("next-trick")
 
 
     const msgP = document.getElementById("msg");
     var searchData = document.querySelectorAll("[id^='searchdata-']")
+
+    var human_hands = document.getElementById("human-hands")
     var current_plays = document.getElementById("current-plays")
     var result = document.getElementById("result")
 
@@ -87,14 +96,19 @@
         let player_idx = (start_idx+card_count) % player_num
 
         // change this to stop at human id
-        if(card_count >= player_num){
+        if(card_count >= player_num || player_idx==human_id){
 
             // post processing trick if all players played
+            // do all played case only and skip human if card_count reached max
             if(card_count >= player_num){
                 dealTrick()
+                nextTrick.removeAttribute("disabled")
             }
-
-            // left here empty if stop at human
+            else if(player_idx == human_id){
+                // allow human play
+                nextTrick.disabled = true
+                human_turn = true
+            }
             return ;
         }
 
@@ -115,7 +129,7 @@
     // no more loop, be recursive like
     async function halfTrick() {
 
-        if(!game.isGameOver()){
+        if(!game.isGameOver() && !human_turn){
             // reset
             // maybe consider reset in afterMove?
             let card_count = 0
@@ -124,7 +138,7 @@
 
             // to get which player is playing now
             // before first trick, random pick when constructing fourjack obj
-            let start_idx = game.currentPlayer-1
+            start_idx = game.currentPlayer-1
             //player_idx = game.currentPlayer-1
 
             // for print html only
@@ -164,6 +178,9 @@
             // check if played enough cards inside
 
         }
+        else{
+            console.log(`something wrong, gameover? ${game.isGameOver()}, human_turn? ${human_turn}`)
+        }
 
 
     }
@@ -172,14 +189,34 @@
 
 
     // maybe no need afterMove
-    function afterMove() {
-        // human_id + 1 to finish a trick
-        // card_count continues
-        // no more lead
-        while(card_count < player_num){
-            oneCard()
-            card_count += 1
-            player_idx = (start_idx+card_count) % player_num
+    function afterMove(event) {
+        if(human_turn){
+            let card_rank = event.target.value
+            let human_action = new cardgame.Action(card_rank)
+            game.doAction(human_action, real_play)
+
+            // print on html
+            current_plays.innerHTML += `&nbsp; ${card_rank} &nbsp;||`
+
+            if(game.currentPlayer == 1) {
+                current_plays.innerHTML += `<br>`
+            }
+
+            // human_id + 1 to finish a trick
+            // card_count continues
+            // no more lead
+            let card_count = human_id - start_idx
+            if(card_count < 0){
+                card_count = card_count + player_num
+            }
+
+            human_turn = false
+            event.target.disabled = true
+
+            oneCard(card_count+1, start_idx)
+        }
+        else{
+            console.log(`human_turn?$ {human_turn}, consider click Next Trick first`)
         }
     }
 
@@ -229,6 +266,29 @@
 
             searchData[game.currentPlayer-1].innerHTML = "<pre>"+prevSearchData+currSearchData+"</pre>";
         }
+
+
+        // create human hand gui
+        let human_card_arr = game.hand_table[human_id]
+        for(let i=0; i<human_card_arr.length; i++){
+            if(human_card_arr[i] == VALID){
+                var card_i = document.createElement('button')
+                let card_rank = i
+                let letter = game.num2Letter(card_rank)
+
+                card_i.textContent = letter
+                card_i.style.width = "auto";  // Or dynamicButton.style.width = "";
+                card_i.style.height = "auto";
+                card_i.value = card_rank
+
+                // add listener
+                card_i.addEventListener("click", (event) => afterMove(event))
+
+
+                human_hands.append(card_i)
+            }
+        }
+        human_turn = false
 
     }
 

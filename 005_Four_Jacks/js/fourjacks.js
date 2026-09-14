@@ -219,7 +219,7 @@ class Private_View{
 
 
 
-function num2Letter(card_num) {
+exports.Game.prototype.num2Letter = function(card_num) {
     const suit = Math.floor( card_num/onesuit_max )
     const pure_rank = card_num % onesuit_max
 
@@ -656,7 +656,7 @@ exports.Game.prototype.doAction = function (a, real_play=false) {
     if(real_play){
         // just for html temporary
         this.playedCard = card_rank
-        this.playedLetter = num2Letter(card_rank)
+        this.playedLetter = this.num2Letter(card_rank)
     }
     // check trick win
     let best_player = this.trickWin()
@@ -882,7 +882,7 @@ exports.Game.prototype.trickWin = function() {
         // consider cancel during ismcts
         this.trick_str = ""
         for(let i=0; i<player_num; i++) {
-            let card_letter = num2Letter(this.card_played[i][RANK])
+            let card_letter = this.num2Letter(this.card_played[i][RANK])
 
             if(i == lead_id){
                 this.trick_str += `*`
