@@ -347,7 +347,9 @@ exports.Game.prototype.prepareDraw = function(){
 
     // public info and currentPlayer's hand allow all drawn
     for(let j=0; j<total_cards; j++){
-        if(public_cards[j]!=READY || private_i.private_table[player_i][j]!=UNKNOWN){
+        // if player_i NOT_HAVE, other may have chance, shouldn't update, only USED, VALID( > UNKNOWN)
+        // if UNKNOWN, NOT_HAVE, just skip
+        if(public_cards[j]!=READY || private_i.private_table[player_i][j]>UNKNOWN){
             for(let ii=0; ii<player_num; ii++){
                 private_i.final_table[ii][j] = DRAWN
             }
