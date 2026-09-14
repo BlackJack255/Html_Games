@@ -264,10 +264,11 @@ exports.Game.prototype.deal = function(){
 
     // set deck fixed for test
     
-    
+    /*
     deck = [2, 7, 12, 15, 16, 17, 18, 21,   4, 10, 24, 26, 27, 28, 30, 31, 
         1, 3, 5, 6, 19, 20, 25, 29,   0, 8, 9, 11, 13, 14, 22, 23
     ]
+    */
     
     
     
@@ -294,9 +295,9 @@ exports.Game.prototype.deal = function(){
 
 
     // temporary first trick random player lead
-    //this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
+    this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
     // for test
-    this.currentPlayer = 4
+    //this.currentPlayer = 4
 
     this.lead_suit = null
 
