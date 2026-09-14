@@ -11,3 +11,5 @@ Contents of html games, with demos to play
 
 4. Game of Amazons [(Demo)](https://blackjack255.github.io/Html_Games/004_Game_of_Amazons/)
 
+5. Four Jacks (trick-taking game) [(Demo)](https://blackjack255.github.io/Html_Games/005_Four_Jacks/)
+
