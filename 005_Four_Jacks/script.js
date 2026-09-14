@@ -209,8 +209,10 @@
                 game.doAction(human_action, real_play)
                 game.afterAction()
 
+                let card_letter = game.playedLetter
+
                 // print on html
-                current_plays.innerHTML += `&nbsp; ${card_rank} &nbsp;||`
+                current_plays.innerHTML += `&nbsp; ${card_letter} &nbsp;||`
 
                 if(game.currentPlayer == 1) {
                     current_plays.innerHTML += `<br>`
