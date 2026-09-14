@@ -10,7 +10,8 @@ const suit_num = 4
 let onesuit_max = 8
 let total_cards = suit_num * onesuit_max
 
-const DRAWED = 1
+const SIMU_DRAWN = 2
+const DRAWN = 1
 const READY = 0
 
 const USED = 1
@@ -106,7 +107,8 @@ exports.Game = function(o) {
         this.previousPlayer = o.previousPlayer
 
         this.trick_str = ""
-        this.temp_card = structuredClone(o.temp_card)
+        this.playedCard = o.playedCard
+        this.playedLetter = structuredClone(o.playedLetter)
 
         this.winner_arr = structuredClone(o.winner_arr)
 
@@ -142,7 +144,8 @@ exports.Game = function(o) {
 
         // just for html
         this.trick_str = ""
-        this.temp_card = ""
+        this.playedCard = UNKNOWN
+        this.playedLetter = ""
 
         this.winner_arr = null
 
@@ -158,9 +161,28 @@ exports.Game.prototype.copyGame = function() {
 
 
 class Private_View{
-    constructor(card_arr=null){
+    constructor(player_id, card_arr=null){
+        this.player_id = player_id
 
+        this.private_table = [
+                                ...Array(player_num)
+                                    .fill(null)
+                                    .map(() => Array(total_cards).fill(UNKNOWN))
+                            ]
+        
+        if(card_arr==null){
+            console.log("null card arr, wrong")
+        }
+        for (let i=0; i<card_arr.length; i++){
+            let card = card_arr[i]
+            insertCard(player_id, card, VALID, this.private_table)
+        }
 
+        this.final_table = [
+                                ...Array(player_num)
+                                    .fill(null)
+                                    .map(() => Array(total_cards).fill(READY))
+                            ]
 
         
         this.handMap = new Map()
@@ -186,9 +208,10 @@ function num2Letter(card_num) {
     return letter
 }
 
-exports.Game.prototype.insertCard = function(player_idx, card, if_played, card_table) {
+function insertCard(player_idx, card, if_played, card_table) {
     let ok = false
-    if(card_table[player_idx][card] == UNKNOWN){
+    //if(card_table[player_idx][card] == UNKNOWN){
+    if(card_table[player_idx][card] < if_played){
         card_table[player_idx][card] = if_played
 
         ok = true
@@ -205,11 +228,11 @@ exports.Game.prototype.deal = function(){
         // built in random first
         let rand_idx = Math.floor( Math.random()* total_cards )
 
-        if(public_cards[rand_idx] != DRAWED){
+        if(public_cards[rand_idx] != DRAWN){
             // fill in if valid
             deck[count] = rand_idx
 
-            public_cards[rand_idx] = DRAWED
+            public_cards[rand_idx] = DRAWN
             count += 1
         }
     }
@@ -221,11 +244,11 @@ exports.Game.prototype.deal = function(){
 
     // set deck fixed for test
     
-    /*
-    deck = [1, 2, 4, 8, 11, 13, 16, 18,   0, 9, 10, 19, 20, 23, 25, 26, 
-        5, 6, 15, 17, 22, 28, 29, 31,   3, 7, 12, 14, 21, 24, 27, 30
+    
+    deck = [2, 7, 12, 15, 16, 17, 18, 21,   4, 10, 24, 26, 27, 28, 30, 31, 
+        1, 3, 5, 6, 19, 20, 25, 29,   0, 8, 9, 11, 13, 14, 22, 23
     ]
-    */
+    
     
     
     
@@ -236,11 +259,11 @@ exports.Game.prototype.deal = function(){
         let card_array = deck.slice(i*hold_max, (i+1)*hold_max)
 
         // related to var private_view_arr
-        private_view_arr[i] = new Private_View(card_array)
+        private_view_arr[i] = new Private_View(i, card_array)
 
         for (let j=0; j<card_array.length; j++){
             let card = card_array[j]
-            this.insertCard(i, card, VALID, this.hand_table)
+            insertCard(i, card, VALID, this.hand_table)
         }
         
     }
@@ -251,9 +274,9 @@ exports.Game.prototype.deal = function(){
 
 
     // temporary first trick random player lead
-    this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
+    //this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
     // for test
-    //this.currentPlayer = 2
+    this.currentPlayer = 4
 
     this.lead_suit = null
 
@@ -261,8 +284,11 @@ exports.Game.prototype.deal = function(){
 
 }
 
-exports.Game.prototype.showTable = function () {
+exports.Game.prototype.showTable = function (actual=true) {
     let table = this.hand_table
+    if(!actual){
+        table = this.simu_table
+    }
     console.log(`card table: `)
     let part_str = ""
     for(let i=0; i<table.length; i++){
@@ -278,6 +304,39 @@ exports.Game.prototype.showTable = function () {
     console.log(part_str)
 }
 
+exports.Game.prototype.prepareDraw = function(){
+    let player_i = this.currentPlayer - 1
+
+    let private_i = private_view_arr[player_i]
+
+    // clear final table
+    // prepare final table
+    for(let i=0; i<player_num; i++){
+        for(let j=0; j<total_cards; j++){
+            private_i.final_table[i][j] = READY
+        }
+    }
+
+
+
+
+
+
+
+    // prepare final table
+    for(let i=0; i<player_num; i++){
+        for(let j=0; j<total_cards; j++){
+            if(public_cards[j]!=READY || private_i.private_table[i][j]!=UNKNOWN){
+                // every one marked card as drawn
+                for(let ii=0; ii<player_num; ii++){
+                    private_i.final_table[ii][j] = DRAWN
+                }
+            }
+        }
+    }
+
+}
+
 
 exports.Game.prototype.determinize = function(){
 
@@ -289,6 +348,7 @@ exports.Game.prototype.determinize = function(){
 
     // copy hand_table to simu_table
     // hand-craft copy, fill in value
+    /*
     for(let i=0; i<player_num; i++){
         for(let j=0; j<total_cards; j++){
             if(this.hand_table[i][j] != UNKNOWN){
@@ -298,8 +358,150 @@ exports.Game.prototype.determinize = function(){
             }
         }
     }
+    */
 
     // draw cards from currentPlayer's private_view
+    let player_idx = this.currentPlayer - 1
+    let private_table = private_view_arr[player_idx].private_table
+    let final_table = private_view_arr[player_idx].final_table
+
+    let draw_ready_num = Array(player_num).fill(total_cards)
+    let draw_need_num = Array(player_num).fill(hold_max)
+
+    // fill valid or used to simu_table
+    for(let i=0; i<player_num; i++){
+        for(let j=0; j<total_cards; j++){
+            if(final_table[i][j]==DRAWN){
+                // public played
+                draw_ready_num[i] --
+                if(private_table[i][j]!=UNKNOWN){
+                    // player i holding or played
+                    let card_rank = j
+                    // private_table[i][j] should be USED or VALID
+                    insertCard(i, card_rank, private_table[i][j], this.simu_table)
+                    draw_need_num[i] --
+                }
+            }
+        }
+    }
+
+    /*
+    if(draw_ready_num[0] == 0 && draw_ready_num[1] == 0 && draw_ready_num[2] == 0 && draw_ready_num[3] == 0){
+        console.log("weired")
+        huhsoeuhoehun
+    }
+    */
+
+    //this.showTable(false)
+
+
+    // draw unknown hidden cards
+    let sorted_idx = Array.from(draw_ready_num.keys())
+    sorted_idx.sort((a, b) => draw_ready_num[a] - draw_ready_num[b])
+
+    let drawn_arr = [
+                        ...Array(player_num)
+                            .fill(null)
+                    ]
+    for (let i=0; i<player_num; i++){
+        drawn_arr[i] = Array( draw_need_num[i] )
+    }
+
+    let regular_draw_finish = false
+    while (!regular_draw_finish) {
+        // initial
+        for(let i=0; i<player_num-1; i++){
+            for(let j=0; j<draw_need_num[i]; j++){
+                drawn_arr[i][j] = UNKNOWN
+            }
+        }
+
+        let draw_ready_num_temp = Array(player_num)
+        for(let i=0; i<player_num; i++){
+            draw_ready_num_temp[i] = draw_ready_num[i]
+        }
+
+        // clear final_table if SIMU_DRAWN
+        for(let i=0; i<player_num; i++){
+            for(let j=0; j<total_cards; j++){
+                if(final_table[i][j] == SIMU_DRAWN){
+                    final_table[i][j] = READY
+                }
+            }
+        }
+
+
+        let drawAllowed = true
+        let finished_count = 0
+
+        for (let i=0; i<player_num && drawAllowed; i++){
+            let draw_player = sorted_idx[i]
+
+            let temp_count = 0
+            let drawn_times = 0
+            while (drawn_times < draw_need_num[draw_player]){
+                let drawn_card = Math.floor( Math.random() * total_cards)
+
+                if(final_table[draw_player][drawn_card] == READY){
+                    // draw_player got card
+                    drawn_arr[draw_player][drawn_times] = drawn_card
+
+                    // SIMU_USED all players, include draw_player
+                    // others unable to draw this card
+                    for(let j=0; j<player_num; j++){
+                        if(final_table[j][drawn_card] == READY){
+                            final_table[j][drawn_card] = SIMU_DRAWN
+                            if(j!=draw_player){
+                                draw_ready_num_temp[j] -= 1
+                            }
+                        }
+                    }
+
+                    drawn_times ++
+                    
+                }
+                temp_count ++
+
+                if(temp_count % 500 == 0){
+                    console.log(`draw_need: ${draw_need_num}, , draw_ready ori: ${draw_ready_num}`)
+                    console.log(`weired while loop, steps: ${temp_count}`)
+                }
+            }
+
+            // check remaining players still able to draw
+            for (let j=i+1; j<player_num && drawAllowed; j++) {
+                let check_id = sorted_idx[j]
+
+                if (draw_need_num[check_id] > draw_ready_num_temp[check_id]){
+                    drawAllowed = false
+                }
+            }
+
+            finished_count ++
+        } // finish one time drawn, see if all fit public information
+
+
+        // if fit public information, then insert drawn result
+        if (finished_count == player_num){
+            for (let i=0; i<player_num; i++){
+                let draw_player = sorted_idx[i]
+                for (let j=0; j<draw_need_num[draw_player]; j++) {
+                    insertCard(draw_player, drawn_arr[draw_player][j], VALID, this.simu_table)
+                }
+            }
+
+            regular_draw_finish = true
+            //console.log(`############## done draw, finish determinize #############`)
+        }
+        else{
+            console.log("############## failde, draw again ##############")
+        }
+
+    }
+
+
+    // show simu_table
+    //this.showTable(false)
 
 }
 
@@ -384,8 +586,6 @@ exports.Game.prototype.basic_play = function(player_idx, card_rank, card_table) 
         }
     }
 
-    // just for html temporary
-    this.temp_card = num2Letter(card_rank)
 
     this.card_played[player_idx][RANK] = card_rank
     this.card_played[player_idx][IF_FOLLOWED] = follow_suit
@@ -410,6 +610,11 @@ exports.Game.prototype.doAction = function (a, real_play=false) {
     this.basic_play(this.currentPlayer-1, card_rank, table)
 
 
+    if(real_play){
+        // just for html temporary
+        this.playedCard = card_rank
+        this.playedLetter = num2Letter(card_rank)
+    }
     // check trick win
     let best_player = this.trickWin()
 
@@ -438,8 +643,15 @@ exports.Game.prototype.doAction = function (a, real_play=false) {
 exports.Game.prototype.afterAction = function () {
     // remember currentTurn, currentPlayer already updated
     // so using previousPlayer
+
+    public_cards[this.playedCard] = USED
     
     // deal with information set
+    // record played card, for all players private_view, including currentPlayer
+    let previous_id = this.previousPlayer - 1
+    for(let i=0; i<player_num; i++){
+        insertCard(previous_id, this.playedCard, USED, private_view_arr[i].private_table)
+    }
     
 }
 
