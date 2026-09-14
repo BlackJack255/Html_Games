@@ -804,7 +804,8 @@ function record_discard(player_pov, player_j, discard_suit) {
             // direct using start, end
             for(let j=start; j<end; j++){
                 // player_pov self may have info that NOT_HAVE, so <=UNKNOWN
-                if(pov_table[target_id][j]==UNKNOWN && pov_table[player_pov][j]<=UNKNOWN){
+                // also check card haven't been played publicly
+                if(public_cards[j]==READY && pov_table[target_id][j]==UNKNOWN && pov_table[player_pov][j]<=UNKNOWN){
                     // same as insertCard
                     pov_table[target_id][j] = VALID
                 }
