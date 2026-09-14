@@ -14,9 +14,15 @@ const SIMU_DRAWN = 2
 const DRAWN = 1
 const READY = 0
 
+// have card
 const USED = 1
 const VALID = 0
+
+
 const UNKNOWN = -1
+
+// not have card
+const NOT_HAVE = -2
 
 // ruff in future?
 const FOLLOW = 1
@@ -61,6 +67,14 @@ const ismcts = require('ismcts');
 var public_cards = Array(total_cards).fill(READY)
 
 var private_view_arr = Array(player_num).fill(null)
+
+let discard_status = [
+                        ...Array(suit_num)
+                            .fill(null)
+                            .map(() => Array(player_num).fill(READY))
+                    ]
+let discard_suit_count = Array(suit_num).fill(0)
+let discard_check = Array(suit_num).fill(0)
 
 
 exports.Action = function(card_rank) {
@@ -141,6 +155,7 @@ exports.Game = function(o) {
         this.score = Array(player_num).fill(INIT_SCORE)
 
         this.previousPlayer = -1
+        this.previous_lead_suit = -1
         // currentPlayer already set as 1
         // so using as -1
 
@@ -339,8 +354,14 @@ exports.Game.prototype.prepareDraw = function(){
         }
     }
     for(let i=0; i<player_num; i++){
-        for(let j=0; j<total_cards; j++){
-            // case of discover, only specific player drown
+        if(i!=player_i){
+            for(let j=0; j<total_cards; j++){
+                // case of discover, only specific player drown
+                // USED, VALID, NOT_HAVE, are drawn
+                if(private_i.private_table[i][j] !=UNKNOWN){
+                    private_i.final_table[i][j] = DRAWN
+                }
+            }
         }
     }
 
@@ -384,11 +405,15 @@ exports.Game.prototype.determinize = function(){
                 // public played
                 draw_ready_num[i] --
                 if(private_table[i][j]!=UNKNOWN){
-                    // player i holding or played
-                    let card_rank = j
                     // private_table[i][j] should be USED or VALID
-                    insertCard(i, card_rank, private_table[i][j], this.simu_table)
-                    draw_need_num[i] --
+                    // add logic >UNKNOWN, now there's private NOT_HAVE
+                    if(private_table[i][j] > UNKNOWN){
+                        // player i holding or played
+                        let card_rank = j
+                        insertCard(i, card_rank, private_table[i][j], this.simu_table)
+                        draw_need_num[i] --
+                    }
+                    // if it's NOT_HAVE, draw_need_num shouldn't minus
                 }
             }
         }
@@ -416,6 +441,7 @@ exports.Game.prototype.determinize = function(){
         drawn_arr[i] = Array( draw_need_num[i] )
     }
 
+    let regular_count = 0
     let regular_draw_finish = false
     while (!regular_draw_finish) {
         // initial
@@ -504,6 +530,10 @@ exports.Game.prototype.determinize = function(){
         }
         else{
             console.log("############## failde, draw again ##############")
+            if(regular_count % 500 == 0){
+                console.log(`info: finish_count ${finished_count}, draw_order: ${sorted_idx}, draw_need ${draw_need_num}, draw_ready_temp: ${draw_ready_num_temp}, draw_ready: ${draw_ready_num}`)
+                huoesuhoetuhosehueons
+            }
         }
 
     }
@@ -649,6 +679,77 @@ exports.Game.prototype.doAction = function (a, real_play=false) {
     }
 }
 
+
+// logic about discard
+function record_discard(player_pov, player_j, discard_suit) {
+    let suit_status = discard_status[discard_suit]
+    let start = discard_suit * onesuit_max
+    let end = start + onesuit_max
+    
+    if(suit_status[player_j] == READY){
+        console.log(`deal with player ${player_j}'s discard`)
+        discard_suit_count[discard_suit] ++
+
+        if(discard_suit_count[discard_suit]<=2){
+            suit_status[player_j] = DRAWN
+        }
+
+
+        // update all four player's private_view
+        for(let i=0; i<player_num; i++){
+            let private_table = private_view_arr[i].private_table
+            for(let k=start; k<end; k++){
+                if(private_table[player_j][k]==UNKNOWN){
+                    // same as insertCard
+                    private_table[player_j][k] = NOT_HAVE
+                }
+            }
+        }
+        console.log(`suit status: ${suit_status}`)
+
+    }
+    else{
+        console.log(`no need deal, player ${player_j} already discard before`)
+    }
+
+    // discard further reveal, back to player_pov
+    // this will finish in one trick, each player still holdnig one time running
+    if(suit_status[player_pov]==READY && discard_suit_count[discard_suit] >= 2){
+        console.log("inside further reveal")
+        // should only 2 players do further reveal
+        if(discard_check[discard_suit] < 2){
+            // only 2 players still holding suit
+            // find other player not currentPlayer
+            let target_id = -1
+            for(let i=0; i<player_num && (target_id==-1); i++){
+                if(suit_status[i]==READY && i!=player_pov ){
+                    target_id = i
+                }
+            }
+            console.log(`suit_status: ${suit_status}`)
+            console.log(`found target id: ${target_id}`)
+
+            let pov_table = private_view_arr[player_pov].private_table
+            // direct using start, end
+            for(let j=start; j<end; j++){
+                // player_pov self may have info that NOT_HAVE, so <=UNKNOWN
+                if(pov_table[target_id][j]==UNKNOWN && pov_table[player_pov][j]<=UNKNOWN){
+                    // same as insertCard
+                    pov_table[target_id][j] = VALID
+                }
+            }
+
+            discard_check[discard_suit]++
+        }
+        else{
+            console.log(`done, remain holding players should already recorded`)
+        }
+    }
+
+    console.log("-------------------------------------")
+
+}
+
 // call after ismcts, real play in main js
 // to avoid affect ismcts doAction
 exports.Game.prototype.afterAction = function () {
@@ -662,6 +763,22 @@ exports.Game.prototype.afterAction = function () {
     let previous_id = this.previousPlayer - 1
     for(let i=0; i<player_num; i++){
         insertCard(previous_id, this.playedCard, USED, private_view_arr[i].private_table)
+    }
+
+    // update if discard, except previous_id
+    let discard_suit = this.lead_suit
+    if(this.lead_suit == null){
+        discard_suit = this.previous_lead_suit
+    }
+    
+    
+    if(this.card_played[previous_id][IF_FOLLOWED] == DISCARD){
+        console.log(`previous_id: ${previous_id}`)
+        for(let i=0; i<player_num; i++){
+            if(i!=previous_id){
+                record_discard(i, previous_id, discard_suit)
+            }
+        }
     }
     
 }
@@ -785,13 +902,16 @@ exports.Game.prototype.trickWin = function() {
         }
 
         // reset
+        /*
         for(let i=0; i<this.card_played.length; i++){
             let played_i = this.card_played[i]
             for(let j=0; j<played_i.length; j++){
                 this.card_played[i][j] = UNKNOWN
             }
         }
+        */
 
+        this.previous_lead_suit = this.lead_suit
         this.lead_suit = null;
 
         return best_player
