@@ -298,9 +298,10 @@ exports.Game.prototype.deal = function(){
 
     // temporary first trick random player lead
     this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
-    start_player = this.currentPlayer
     // for test
     //this.currentPlayer = 4
+    start_player = this.currentPlayer
+    
 
     this.lead_suit = null
 
