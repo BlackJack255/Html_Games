@@ -233,7 +233,7 @@
             }
         }
         else{
-            console.log(`human_turn?$ {human_turn}, consider click Next Trick first`)
+            console.log(`human_turn? ${human_turn}, consider click Next Trick first`)
         }
     }
 
