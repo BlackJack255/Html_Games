@@ -207,6 +207,7 @@
             if(allow){
                 let human_action = new cardgame.Action(card_rank)
                 game.doAction(human_action, real_play)
+                game.afterAction()
 
                 // print on html
                 current_plays.innerHTML += `&nbsp; ${card_rank} &nbsp;||`
