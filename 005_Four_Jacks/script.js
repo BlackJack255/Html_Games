@@ -34,6 +34,8 @@
     var current_plays = document.getElementById("current-plays")
     var result = document.getElementById("result")
 
+    var replay_again = document.getElementById("replay-again")
+
 
     var prevSearchDataTurn = 0;
     var prevSearchData = "";
@@ -227,7 +229,7 @@
                 oneCard(card_count+1, start_idx)
             }
             else{
-                console.log(`choose another card, need follow suit`)
+                console.log(`choose another card, need follow suit, see allAction: ${human_allAct}`)
             }
         }
         else{
@@ -252,6 +254,28 @@
         }
 
         console.log("----------------------------------------------------")
+    }
+
+    function replayAgain() {
+        if(game!=null){
+            game.replay()
+
+            let cards_array = human_hands.children
+            console.log("card arr: ", cards_array)
+            for(let i=0; i<cards_array.length; i++){
+                cards_array[i].removeAttribute("disabled")
+            }
+
+            for(let i=0; i<player_num; i++){
+                searchData[i].innerHTML = `${i}, data${i} here`
+            }
+
+            current_plays.innerHTML = ""
+            result.innerHTML = ""
+
+            nextTrick.removeAttribute("disabled")
+            human_turn = false
+        }
     }
 
 
@@ -304,6 +328,8 @@
             }
         }
         human_turn = false
+
+        replay_again.addEventListener("click", () => replayAgain())
 
     }
 

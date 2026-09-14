@@ -6,6 +6,8 @@ let hold_max = 8 // change to onesuit_max in future
 
 let turn_max = player_num * hold_max
 
+let start_player = -1
+
 const suit_num = 4
 let onesuit_max = 8
 let total_cards = suit_num * onesuit_max
@@ -296,6 +298,7 @@ exports.Game.prototype.deal = function(){
 
     // temporary first trick random player lead
     this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
+    start_player = this.currentPlayer
     // for test
     //this.currentPlayer = 4
 
@@ -303,6 +306,64 @@ exports.Game.prototype.deal = function(){
 
     this.winner_arr = null
 
+}
+
+exports.Game.prototype.replay = function() {
+    // reset
+    ismcts.Game.call(this, { nPlayers: player_num });
+
+    for(let j=0; j<total_cards; j++){
+        public_cards[j] = READY
+    }
+
+    for(let i=0; i<suit_num; i++){
+        discard_check[i] = 0
+        discard_suit_count[i] = 0
+        for(let j=0; j<player_num; j++){
+            discard_status[i][j] = READY
+        }
+    }
+
+
+
+    let old_deck = Array(total_cards).fill(0)
+
+    let ith = 0
+    for(let i=0; i<player_num; i++){
+        for(let j=0; j<total_cards; j++){
+            if(this.hand_table[i][j] != UNKNOWN){
+                old_deck[ith] = j
+                this.hand_table[i][j] = UNKNOWN
+                ith ++
+            }
+        }
+    }
+
+    // most copy from this.deal()
+    for (let i=0; i<player_num; i++){
+        let card_array = old_deck.slice(i*hold_max, (i+1)*hold_max)
+
+        // related to var private_view_arr
+        private_view_arr[i] = new Private_View(i, card_array)
+
+        for (let j=0; j<card_array.length; j++){
+            let card = card_array[j]
+            insertCard(i, card, VALID, this.hand_table)
+        }
+        
+    }
+
+    for(let i=0; i<player_num; i++){
+        this.score[i] = INIT_SCORE
+    }
+
+    this.currentPlayer = start_player
+
+    this.lead_suit = null
+
+    this.winner_arr = null
+
+    this.showTable(true)
 }
 
 exports.Game.prototype.showTable = function (actual=true) {
