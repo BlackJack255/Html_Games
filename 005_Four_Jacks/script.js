@@ -54,8 +54,9 @@
         let ai_action = ai.stopThinking(state);
 
         game.doAction(ai_action, real_play)
+        game.afterAction()
 
-        let card_rank = game.temp_card
+        let card_rank = game.playedLetter
 
         current_plays.innerHTML += `&nbsp; ${card_rank} &nbsp;||`
 
@@ -102,6 +103,9 @@
         if (card_count==0) {
             if_lead = true
         }
+
+        // prepare final_table, for draw information sets
+        game.prepareDraw()
 
         // need to be last in function
         computerMove(card_count, start_idx)
