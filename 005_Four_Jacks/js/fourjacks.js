@@ -329,14 +329,18 @@ exports.Game.prototype.prepareDraw = function(){
 
 
     // prepare final table
+
+    // public info and currentPlayer's hand allow all drawn
+    for(let j=0; j<total_cards; j++){
+        if(public_cards[j]!=READY || private_i.private_table[player_i][j]!=UNKNOWN){
+            for(let ii=0; ii<player_num; ii++){
+                private_i.final_table[ii][j] = DRAWN
+            }
+        }
+    }
     for(let i=0; i<player_num; i++){
         for(let j=0; j<total_cards; j++){
-            if(public_cards[j]!=READY || private_i.private_table[i][j]!=UNKNOWN){
-                // every one marked card as drawn
-                for(let ii=0; ii<player_num; ii++){
-                    private_i.final_table[ii][j] = DRAWN
-                }
-            }
+            // case of discover, only specific player drown
         }
     }
 
