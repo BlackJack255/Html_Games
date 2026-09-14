@@ -63,15 +63,18 @@ var public_cards = Array(total_cards).fill(READY)
 var private_view_arr = Array(player_num).fill(null)
 
 
-exports.Action = function(card_rank, hand_id) {
+exports.Action = function(card_rank) {
+//exports.Action = function(card_rank, hand_id) {
     ismcts.Action.call(this);
 
     // 1-dim index
     this.card_rank = card_rank
-    this.hand_id = hand_id
+    //this.hand_id = hand_id
 }
 
 exports.Action.prototype.toString = function() {
+    let s = ""
+    /*
     let s = "" + `${this.hand_id}`;
 
     if(this.hand_id == 1){
@@ -86,9 +89,10 @@ exports.Action.prototype.toString = function() {
     else {
         s += `th `
     }
+    */
 
     //s += `card : `
-    s += `card ${num2Letter(this.card_rank)}: `
+    s += `card ${this.card_rank}: `
     return s;
 };
 
@@ -184,11 +188,12 @@ class Private_View{
                                     .map(() => Array(total_cards).fill(READY))
                             ]
 
-        
+        /*
         this.handMap = new Map()
         for(let i=0; i<card_arr.length; i++){
             this.handMap.set(card_arr[i], i)
         }
+        */
 
 
     }
@@ -518,8 +523,9 @@ function findValid(player_idx, suit_k, card_table) {
         for(let j=start; j<end; j++) {
             if(card_table[player_idx][j] == VALID){
                 found = true
-                let hand_id = private_view_arr[player_idx].handMap.get(j)
-                as.push(new exports.Action(j, hand_id))
+                //let hand_id = private_view_arr[player_idx].handMap.get(j)
+                //as.push(new exports.Action(j, hand_id))
+                as.push(new exports.Action(j))
             }
         }
     }
@@ -529,8 +535,9 @@ function findValid(player_idx, suit_k, card_table) {
         // maybe skip suit_k in future? but how to deal with leading?
         for(let j=0; j<total_cards; j++) {
             if(card_table[player_idx][j] == VALID){
-                let hand_id = private_view_arr[player_idx].handMap.get(j)
-                as.push(new exports.Action(j, hand_id))
+                //let hand_id = private_view_arr[player_idx].handMap.get(j)
+                //as.push(new exports.Action(j, hand_id))
+                as.push(new exports.Action(j))
             }
         }
     }
