@@ -261,7 +261,6 @@
             game.replay()
 
             let cards_array = human_hands.children
-            console.log("card arr: ", cards_array)
             for(let i=0; i<cards_array.length; i++){
                 cards_array[i].removeAttribute("disabled")
             }
