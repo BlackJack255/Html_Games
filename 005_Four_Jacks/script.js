@@ -71,7 +71,7 @@
 
         current_plays.innerHTML += `&nbsp; ${card_rank} &nbsp;||`
 
-        if(!game.isGameOver() && game.currentPlayer == 1) {
+        if(card_count<player_num-1 && game.currentPlayer == 1) {
             console.log(`currentPlayer: ${game.currentPlayer}`)
             current_plays.innerHTML += `<br>`
         }
