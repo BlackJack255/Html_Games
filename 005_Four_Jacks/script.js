@@ -181,7 +181,7 @@
 
         }
         else{
-            console.log(`something wrong, gameover? ${game.isGameOver()}, human_turn? ${human_turn}`)
+            msgP.textContent = `something wrong, gameover? ${game.isGameOver()}, human_turn? ${human_turn}`
         }
 
 
@@ -232,11 +232,11 @@
                 oneCard(card_count+1, start_idx)
             }
             else{
-                console.log(`choose another card, need follow suit, see allAction: ${human_allAct}`)
+                msgP.textContent = `choose another card, need follow suit, see allAction: ${human_allAct}`
             }
         }
         else{
-            console.log(`human_turn? ${human_turn}, consider click Next Trick first`)
+            msgP.textContent = `human_turn? ${human_turn}, consider click Next Trick first`
         }
     }
 
