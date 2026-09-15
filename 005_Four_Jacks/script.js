@@ -345,4 +345,17 @@
     newGame()
     game.showTable()
 
+
+
+    document.getElementById("maxtrials").addEventListener("change", (event) => {
+        maxTrials = event.target.value;
+        if(ai){
+            ai.nTrials = maxTrials;
+        }
+    });
+
+    document.getElementById("maxtime").addEventListener("change", (event) => {
+        maxTime = event.target.value
+    });
+
 })();
