@@ -3,18 +3,22 @@
     <head>
     </head>
     <body>
-        <p id="msg"></p>
-        <div id="searchdata" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;">
-            <div id="searchdata-0"></div>
-            <div id="searchdata-1"></div>
-            <div id="searchdata-2"></div>
-            <div id="searchdata-3"></div>
+        <div align="center">
+            <p id="msg"></p>
+            <div id="searchdata" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;">
+                <div id="searchdata-0"></div>
+                <div id="searchdata-1"></div>
+                <div id="searchdata-2"></div>
+                <div id="searchdata-3"></div>
+            </div>
+        
+            <div id="human-hands"></div>
+            <div id="current-plays"></div>
+            <button type="button" id="next-trick">Next Trick</button>
+            <div id="result"></div>
+            <button type="button" id="replay-again">Replay Again</button>
         </div>
-        <div id="human-hands"></div>
-        <div id="current-plays"></div>
-        <button type="button" id="next-trick">Next Trick</button>
-        <div id="result"></div>
-        <button type="button" id="replay-again">Replay Again</button>
+
         <script src="js/nodehack.js"></script>
         <script src="js/mcts.js"></script>
         <script src="js/ismcts.js"></script>

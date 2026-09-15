@@ -71,7 +71,8 @@
 
         current_plays.innerHTML += `&nbsp; ${card_rank} &nbsp;||`
 
-        if(game.currentPlayer == 1) {
+        if(!game.isGameOver() && game.currentPlayer == 1) {
+            console.log(`currentPlayer: ${game.currentPlayer}`)
             current_plays.innerHTML += `<br>`
         }
 
@@ -241,6 +242,12 @@
     }
 
     function dealTrick() {
+        // for print html only
+        if(start_idx>0){
+            for(let i=start_idx; i<player_num; i++){
+                current_plays.innerHTML += ` &nbsp;&nbsp; == &nbsp;&nbsp;||`
+            }
+        }
         result.innerHTML += structuredClone(game.trick_str) + `<br>`
 
         game.showTable()
