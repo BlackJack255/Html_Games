@@ -130,7 +130,7 @@
 
 
     // no more loop, be recursive like
-    async function halfTrick() {
+    function halfTrick() {
 
         if(!game.isGameOver() && !human_turn){
             // reset
