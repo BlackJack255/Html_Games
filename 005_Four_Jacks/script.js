@@ -280,7 +280,7 @@
             }
 
             current_plays.innerHTML = ""
-            result.innerHTML = ""
+            result.innerHTML = `Result:<br>`
 
             nextTrick.removeAttribute("disabled")
             human_turn = false
