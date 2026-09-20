@@ -18,6 +18,14 @@
     // always stop at human_id
     const human_id = 4-1
 
+    const suit_num = 4
+    let onesuit_max = 9
+    let total_cards = suit_num * onesuit_max
+
+    let piles_num = 3
+    let pile_len = Math.floor(total_cards/piles_num)
+    let pick_max = 3
+
     // no need after human click pick involved
     let pick_count = 0
 
@@ -56,6 +64,7 @@
 
         let ai_action = ai.stopThinking(state);
         game.doAction(ai_action)
+        markPlayed(ai_action)
 
         // post processing
         current_plays.innerHTML += `player${player_idx+1} pick: ${ai_action}||<br>`
@@ -78,14 +87,18 @@
     // large recursive
     function oneCard(player_idx) {
         // stop criteria
-        //if(player_idx == human_id){
-        if(pick_count >= player_num){
-            result.innerHTML += structuredClone(current_plays.innerHTML) + `<br>`
+        if(pick_count >= player_num || player_idx == human_id){
 
             if(game.isGameOver()){
                 result.innerHTML += `final scores: ${game.scores}, winner: ${game.winner_arr}`
             }
-            // activate human pick
+            else{
+                // activate human pick
+                msgP.textContent = `Your turn`
+                console.log("now player's collection: ", game.player_collects)
+                game.humanPrepare()
+                human_turn = true
+            }
             return ;
         }
 
@@ -94,12 +107,82 @@
 
     }
 
-    
-    function halfCycle() {
-        // maybe human_turn no need?
-        if(!game.isGameOver() && !human_turn){
+    function markPlayed(action_i) {
+        // style .select to .played
+        // 1-dim like calling?
+        let pick_arr = [
+                        [action_i.pick_0, action_i.card_0],
+                        [action_i.pick_1, action_i.card_1],
+                        [action_i.pick_2, action_i.card_2],
+                         ]
+        let valid = true
+        let count = 0
+        while(valid && count<pick_max){
+            if(pick_arr[count][0] >= 0){
+                let pile_i = pick_arr[count][0]
+                let card_j = pick_arr[count][1]
+
+                let html_idx = pile_i*pile_len + card_j
+                let card_div = center_piles.children[html_idx]
+
+                card_div.classList.remove("selected")
+                card_div.classList.add("played")
+
+                count++
+            }
+            else{
+                valid = false
+            }
+        }
+    }
+
+    function humanPick() {
+        let picked = false
+        
+        // also if deal with human slot zero
+        if(game.human_pick_count >0 || game.player_slots[human_id] == 0){
+            // prepare action
+            let pick_arr = game.human_cards
+            let human_action = new cardgame.Action(pick_arr[0][0], pick_arr[0][1], pick_arr[1][0], pick_arr[1][1], pick_arr[2][0], pick_arr[2][1])
+            game.doAction(human_action)
+            markPlayed(human_action)
+
+            // clear before human
             current_plays.innerHTML = ""
             collect_hands.innerHTML = ""
+
+            // post processing
+            current_plays.innerHTML += `player${human_id+1} pick: ${human_action}||<br>`
+            // collect_hands
+            collect_hands.innerHTML += game.getPlayerCollects(human_id)
+            pick_count ++
+
+            picked = true
+        }
+
+        return picked
+    }
+
+    
+    function halfCycle() {
+        // check if human play is valid
+        if(!game.isGameOver() && human_turn){
+            let picked = humanPick()
+
+            if(picked){
+                result.innerHTML += structuredClone(current_plays.innerHTML) + `<br>`
+                human_turn = false
+            }
+            else{
+                console.log(`human pick failed`)
+            }
+        }
+        
+        // if so, human_turn = false
+
+        // maybe human_turn no need?
+        if(!game.isGameOver() && !human_turn){
+            
 
             // to get which player is playing now
             // before first cycle, random pick when constructing nimbly obj
@@ -115,6 +198,25 @@
 
     pick.addEventListener("click", halfCycle)
 
+
+    function cardSelect(card_ele) {
+        if(card_ele.classList.contains("selected")){
+            let pile_i = Number(card_ele.dataset.pile_i)
+            let card_j = Number(card_ele.dataset.card_j)
+            let allowCancel = game.cancelCard(pile_i, card_j)
+            if(allowCancel){
+                card_ele.classList.remove("selected")
+            }
+        }
+        else{
+            let pile_i = Number(card_ele.dataset.pile_i)
+            let card_j = Number(card_ele.dataset.card_j)
+            let valid = game.humanPickCard(pile_i, card_j)
+            if(valid){
+                card_ele.classList.add("selected")
+            }
+        }
+    }
     // function connect to game Nimbly, check if cilck valid
     // try regular div, not button
 
@@ -128,6 +230,11 @@
                 let cards_letter = game.pickCard(i, j)
                 let card_ele = document.createElement("div");
                 card_ele.textContent = cards_letter
+                // add meta data, here is pile_i, card_j
+                card_ele.dataset.pile_i = String(i)
+                card_ele.dataset.card_j = String(j)
+
+                card_ele.addEventListener("click", (event) => cardSelect(event.target))
                 center_piles.appendChild(card_ele)
             }
         }
@@ -165,6 +272,7 @@
 
 
     newGame()
+    game.humanPrepare()
 
     // just for test
     // set player collect

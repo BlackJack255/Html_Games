@@ -336,6 +336,47 @@ exports.Game.prototype.allActions = function (){
     return as
 }
 
+// human player valid actions
+exports.Game.prototype.humanPrepare = function() {
+    for(let i=0; i<piles_num; i++){
+        this.human_piles_top[i] = this.piles_top[i]
+    }
+
+    for(let i=0; i<pick_max; i++){
+        this.human_cards[i] = [UNKNOWN, UNKNOWN]
+    }
+    this.human_pick_count = 0
+}
+exports.Game.prototype.humanPickCard = function(pile_i, card_j) {
+    let valid = false
+    let current_pick_max = Math.min(this.player_slots[this.currentPlayer-1], pick_max)
+    // if valid
+    if(this.human_pick_count < current_pick_max && card_j == this.human_piles_top[pile_i] && this.table_piles[IF_PICKED][pile_i][card_j]==READY){
+        valid = true
+        this.human_cards[this.human_pick_count] = [pile_i, card_j]
+
+        this.human_piles_top[pile_i] --
+        this.human_pick_count ++
+    }
+
+    return valid
+}
+
+exports.Game.prototype.cancelCard = function(pile_i, card_j) {
+    let allowCancel = false
+
+    if(card_j == this.human_piles_top[pile_i]+1 && this.table_piles[IF_PICKED][pile_i][card_j]==READY){
+        allowCancel = true
+        this.human_cards[this.human_pick_count] = [UNKNOWN, UNKNOWN]
+
+        this.human_piles_top[pile_i] ++
+        this.human_pick_count --
+    }
+
+    return allowCancel
+}
+
+
 exports.Game.prototype.fill_collection = function(pile_i, card_j) {
     let card_rank = this.table_piles[RANK][pile_i][card_j]
     let collection_i = this.player_collects[this.currentPlayer-1]
