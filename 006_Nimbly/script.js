@@ -147,6 +147,8 @@
             game.doAction(human_action)
             markPlayed(human_action)
 
+            result.innerHTML += structuredClone(current_plays.innerHTML) + `<br>`
+            
             // clear before human
             current_plays.innerHTML = ""
             collect_hands.innerHTML = ""
@@ -170,7 +172,6 @@
             let picked = humanPick()
 
             if(picked){
-                result.innerHTML += structuredClone(current_plays.innerHTML) + `<br>`
                 human_turn = false
             }
             else{
