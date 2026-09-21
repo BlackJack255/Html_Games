@@ -367,10 +367,38 @@ exports.Game.prototype.cancelCard = function(pile_i, card_j) {
 
     if(card_j == this.human_piles_top[pile_i]+1 && this.table_piles[IF_PICKED][pile_i][card_j]==READY){
         allowCancel = true
-        this.human_cards[this.human_pick_count] = [UNKNOWN, UNKNOWN]
+        // pick order
+        // swap with last confirmed card
+        let target_id = -1
+        let idx = 0
+        while(target_id==-1 && idx < this.human_cards.length){
+            let pick_ith = this.human_cards[idx]
+            if(pick_ith[0]==pile_i && pick_ith[1]==card_j){
+                target_id = idx
+            }
+            else{
+                idx ++
+            }
+        }
 
-        this.human_piles_top[pile_i] ++
-        this.human_pick_count --
+        if(target_id >= 0){
+            let last_id = this.human_pick_count-1
+
+            if(target_id != last_id){
+                let pick_target = this.human_cards[target_id]
+                pick_target[0] = this.human_cards[last_id][0]
+                pick_target[1] = this.human_cards[last_id][1]
+            }
+
+            this.human_cards[last_id][0] = UNKNOWN
+            this.human_cards[last_id][1] = UNKNOWN
+
+            this.human_piles_top[pile_i] ++
+            this.human_pick_count --
+        }
+        else{
+            console.log(`not found in human_cards, unable to cancelCard`)
+        }
     }
 
     return allowCancel
