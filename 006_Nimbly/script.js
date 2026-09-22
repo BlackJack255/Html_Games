@@ -69,7 +69,6 @@
         // post processing
         current_plays.innerHTML += `player${player_idx+1} pick: ${ai_action}||<br>`
         // collect_hands
-        collect_hands.innerHTML += game.getPlayerCollects(player_idx)
         pick_count ++
 
         // next oneCard
@@ -96,6 +95,13 @@
                 // activate human pick
                 msgP.textContent = `Your turn`
                 console.log("now player's collection: ", game.player_collects)
+                // collect_hands
+                collect_hands.innerHTML += game.getPlayerCollects(human_id)
+                // show other player's collection
+                // even player not pick a card this round
+                for(let player_i=0; player_i<human_id; player_i++){
+                    collect_hands.innerHTML += game.getPlayerCollects(player_i)
+                }
                 game.humanPrepare()
                 human_turn = true
             }
@@ -155,8 +161,6 @@
 
             // post processing
             current_plays.innerHTML += `player${human_id+1} pick: ${human_action}||<br>`
-            // collect_hands
-            collect_hands.innerHTML += game.getPlayerCollects(human_id)
             pick_count ++
 
             picked = true
