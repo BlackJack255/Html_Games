@@ -88,20 +88,20 @@
         // stop criteria
         if(pick_count >= player_num || player_idx == human_id){
 
+            console.log("now player's collection: ", game.player_collects)
+            // collect_hands
+            collect_hands.innerHTML += game.getPlayerCollects(human_id)
+            // show other player's collection
+            // even player not pick a card this round
+            for(let player_i=0; player_i<human_id; player_i++){
+                collect_hands.innerHTML += game.getPlayerCollects(player_i)
+            }
             if(game.isGameOver()){
                 result.innerHTML += `final scores: ${game.scores}, winner: ${game.winner_arr}`
             }
             else{
                 // activate human pick
                 msgP.textContent = `Your turn`
-                console.log("now player's collection: ", game.player_collects)
-                // collect_hands
-                collect_hands.innerHTML += game.getPlayerCollects(human_id)
-                // show other player's collection
-                // even player not pick a card this round
-                for(let player_i=0; player_i<human_id; player_i++){
-                    collect_hands.innerHTML += game.getPlayerCollects(player_i)
-                }
                 game.humanPrepare()
                 human_turn = true
             }
@@ -154,14 +154,26 @@
             markPlayed(human_action)
 
             result.innerHTML += structuredClone(current_plays.innerHTML) + `<br>`
-            
-            // clear before human
-            current_plays.innerHTML = ""
-            collect_hands.innerHTML = ""
 
-            // post processing
-            current_plays.innerHTML += `player${human_id+1} pick: ${human_action}||<br>`
-            pick_count ++
+            collect_hands.innerHTML = ""
+            if(game.isGameOver()){
+                result.innerHTML += `final scores: ${game.scores}, winner: ${game.winner_arr}`
+
+                collect_hands.innerHTML += game.getPlayerCollects(human_id)
+                // show other player's collection
+                // even player not pick a card this round
+                for(let player_i=0; player_i<human_id; player_i++){
+                    collect_hands.innerHTML += game.getPlayerCollects(player_i)
+                }
+            }
+            else{
+                // clear before human
+                collect_hands.innerHTML = ""
+
+                // post processing
+                current_plays.innerHTML += `player${human_id+1} pick: ${human_action}||<br>`
+                pick_count ++
+            }
 
             picked = true
         }
