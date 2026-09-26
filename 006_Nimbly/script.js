@@ -155,7 +155,7 @@
 
             result.innerHTML += structuredClone(current_plays.innerHTML) + `<br>`
 
-            collect_hands.innerHTML = ""
+            current_plays.innerHTML = ""
             if(game.isGameOver()){
                 result.innerHTML += `final scores: ${game.scores}, winner: ${game.winner_arr}`
 
