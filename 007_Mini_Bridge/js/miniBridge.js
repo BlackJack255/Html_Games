@@ -112,17 +112,6 @@ exports.Action.prototype.toString = function() {
     return s;
 };
 
-// we're not creating MCTSPlayer again as exports.Game
-// .MCTSPlayer is a function(return created object)
-// direct get function reference
-exports.MCTSPlayer = ismcts.MCTSPlayer
-// no need Object assign?
-//Object.assign(exports.MCTSPlayer.prototype, ismcts.MCTSPlayer.prototype)
-// override
-exports.MCTSPlayer.prototype.resetInterested = function(game) {
-    this.interested_depth = total_cards - game.currentTurn
-    console.log(`interested depth maximum: ${this.interested_depth}`)
-}
 
 
 
