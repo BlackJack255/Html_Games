@@ -222,7 +222,7 @@
                 // human_id + 1 to finish a trick
                 // card_count continues
                 // no more lead
-                let card_count = human_id - start_idx
+                let card_count = game.previousPlayer-1 - start_idx
                 if(card_count < 0){
                     card_count = card_count + player_num
                 }
