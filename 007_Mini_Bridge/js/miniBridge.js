@@ -778,11 +778,6 @@ function findValid(player_idx, suit_k, card_table) {
         }
     }
 
-    if(as.length <= 0){
-        console.log("gets nothing from table, wrong")
-        process.exit(0)
-    }
-
     return as
 }
 
@@ -790,6 +785,16 @@ function findValid(player_idx, suit_k, card_table) {
 exports.Game.prototype.allActions = function () {
     // need var to cross scope
     var as = findValid(this.currentPlayer-1, this.lead_suit, this.simu_table)
+
+    if(as.length <= 0){
+        console.log("gets nothing from table, wrong")
+        for(let i=0; i<player_num; i++){
+            console.log(`player ${i}'s simu_table: ${this.simu_table[i]}`)
+        }
+        console.log(`current player: ${this.currentPlayer-1}, game turn: ${this.currentTurn}`)
+        console.log(`lead suit: ${this.lead_suit}, card played in this trick: ${this.card_played}`)
+        process.exit(0)
+    }
 
     return as
 }
