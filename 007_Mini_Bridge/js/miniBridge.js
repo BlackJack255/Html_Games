@@ -269,6 +269,11 @@ function insertCard(player_idx, card, if_played, card_table) {
 
         ok = true
     }
+
+    if(!ok){
+        console.log(`to player ${player_idx}'s table, card ${card}, try change status from ${card_table[player_idx][card]}  to ${if_played}`)
+        process.exit(0)
+    }
 }
 
 exports.Game.prototype.deal = function(){
