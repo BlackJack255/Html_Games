@@ -2,14 +2,14 @@
 "use strict";
 
 let player_num = 4
-let hold_max = 8 // change to onesuit_max in future
+let hold_max = 13 // change to onesuit_max in future
 
 let turn_max = player_num * hold_max
 
 let start_player = -1
 
 const suit_num = 4
-let onesuit_max = 8
+let onesuit_max = 13
 let total_cards = suit_num * onesuit_max
 
 const SIMU_DRAWN = 2
@@ -26,7 +26,8 @@ const UNKNOWN = -1
 // not have card
 const NOT_HAVE = -2
 
-// ruff in future?
+// ruff in future
+const RUFF = 2
 const FOLLOW = 1
 const DISCARD = 0
 
@@ -59,12 +60,21 @@ numMap.set(4, "10")
 numMap.set(5, "9")
 numMap.set(6, "8")
 numMap.set(7, "7")
+numMap.set(8, "6")
+numMap.set(9, "5")
+numMap.set(10, "4")
+numMap.set(11, "3")
+numMap.set(12, "2")
 
 const INIT_SCORE = 0
 
 
 const ismcts = require('ismcts');
 
+const bridgeDatas_proto = require('bridgeDatas')
+const bridgeDatas = {}
+bridgeDatas.HCP = new bridgeDatas_proto.HCP()
+bridgeDatas.Counter = new bridgeDatas_proto.Counter()
 
 var public_cards = Array(total_cards).fill(READY)
 
@@ -122,9 +132,19 @@ exports.Game = function(o) {
         this.lead_suit = o.lead_suit
         
         this.hand_table = structuredClone(o.hand_table)
+        this.hcp_got = structuredClone(o.hcp_got)
+        this.hcp_remain = structuredClone(o.hcp_remain)
+
         this.simu_table = structuredClone(o.simu_table)
         this.card_played = structuredClone(o.card_played)
+
+        this.declarer = o.declarer
+        this.dummy = o.dummy
+
+        this.trump = o.trump
+        this.contract_level = o.contract_level
         this.score = structuredClone(o.score)
+        this.trick_count = structuredClone(o.trick_count)
 
         this.previousPlayer = o.previousPlayer
 
@@ -145,6 +165,8 @@ exports.Game = function(o) {
                                 .fill(null)
                                 .map(() => Array(total_cards).fill(UNKNOWN))
                             ]
+        this.hcp_got = Array(player_num).fill(0)
+        this.hcp_remain = Array(player_num).fill(0)
         this.simu_table = [
                             ...Array(player_num)
                                 .fill(null)
@@ -156,7 +178,13 @@ exports.Game = function(o) {
                                     .fill(null)
                                     .map(() => Array(2).fill(UNKNOWN))
                             ]
+        this.declarer = UNKNOWN
+        this.dummy = UNKNOWN
+
+        this.trump = UNKNOWN
+        this.contract_level = UNKNOWN
         this.score = Array(player_num).fill(INIT_SCORE)
+        this.trick_count = Array(player_num).fill(0)
 
         this.previousPlayer = -1
         this.previous_lead_suit = -1
@@ -172,7 +200,8 @@ exports.Game = function(o) {
 
         this.winner_arr = null
 
-        this.deal()
+        // maybe no need call when construct
+        //this.deal()
     }
 }
 
@@ -273,10 +302,10 @@ exports.Game.prototype.deal = function(){
         1, 3, 5, 6, 19, 20, 25, 29,   0, 8, 9, 11, 13, 14, 22, 23
     ]
     */
-    
-    
-    
-    
+   
+    console.log(`in deal, deck: ${deck}`)
+    console.log(`deal deck size: ${deck.length}`)
+
 
     //
     // each player an array
@@ -358,6 +387,10 @@ exports.Game.prototype.replay = function() {
 
     for(let i=0; i<player_num; i++){
         this.score[i] = INIT_SCORE
+        // for mini bridge
+        this.trick_count[i] = 0
+
+        this.hcp_remain[i] = this.hcp_got[i]
     }
 
     this.currentPlayer = start_player
@@ -380,13 +413,115 @@ exports.Game.prototype.showTable = function (actual=true) {
         let player_hand = table[i]
         for(let j=0; j<player_hand.length; j++){
             if(player_hand[j] != UNKNOWN){
-                part_str += String(j) + " " + String(player_hand[j]) + "| "
+                let card_letter = this.num2Letter(j)
+                part_str += card_letter + " " + String(player_hand[j]) + "| "
             }
         }
         part_str += "\n"
         
     }
     console.log(part_str)
+}
+
+exports.Game.prototype.suitContract = function(declarer_hand, dummy_hand){
+    // just get best suit?
+    var {trump_suit, bid_level, final_expected} = bridgeDatas.Counter.loserCount(declarer_hand, dummy_hand)
+
+    console.log(`after loserCount, trump: ${trump_suit}, bid_level: ${bid_level}`)
+
+    // set contract
+    this.trump = trump_suit
+    this.contract_level = bid_level
+
+}
+
+// call after deal, before playing
+exports.Game.prototype.bidding = function(){
+    let deal_done = false
+    for(let i=0; i<player_num; i++){
+        let player_i_hand = this.hand_table[i]
+
+        for(let j=0; j<total_cards; j++){
+            if(player_i_hand[j] != UNKNOWN){
+                let rank = j % onesuit_max
+                let hcp = bridgeDatas.HCP.rank2HCP(rank)
+
+                this.hcp_got[i] += hcp
+            }
+        }
+    }
+
+    console.log(`four players hcp: ${this.hcp_got}`)
+    
+    for(let i=0; i<player_num; i++){
+        this.hcp_remain[i] = this.hcp_got[i]
+    }
+
+
+    // determin declarer, dummy
+    let team_hcp = Array(2).fill(0)
+    team_hcp[0] = this.hcp_got[0] + this.hcp_got[2]
+    team_hcp[1] = this.hcp_got[1] + this.hcp_got[3]
+
+
+    if(team_hcp[0] == team_hcp[1]){
+        return deal_done
+    }
+    else{
+        deal_done = true
+
+        let declarer = 1
+        let dummy = 3
+        if(team_hcp[0] > team_hcp[1]){
+            declarer = 0
+            dummy = 2
+        }
+        // higher is declarer
+        if(this.hcp_got[declarer] < this.hcp_got[dummy]){
+            let temp = declarer
+            declarer = dummy
+            dummy = temp
+        }
+        else if(this.hcp_got[declarer] == this.hcp_got[dummy]){
+            // if same, random pick
+            // change to let human choose in future, if human involved
+            let coin = Math.floor(Math.random() * 2)
+            if(coin > 0){
+                let temp = declarer
+                declarer = dummy
+                dummy = temp
+            }
+        }
+
+
+        // defense opening lead as currentPlayer
+        let lead_position = dummy-1
+        if(lead_position < 0){
+            lead_position += player_num
+        }
+
+        this.declarer = declarer + 1
+        this.dummy = dummy + 1
+
+        this.currentPlayer = lead_position + 1
+        start_player = this.currentPlayer
+
+        console.log(`declarer: ${this.declarer}, dummy: ${this.dummy} ,defense first lead: ${this.currentPlayer}`)
+
+        // determine contract
+
+        let declarer_hand = this.hand_table[declarer]
+        let dummy_hand = this.hand_table[dummy]
+        this.suitContract(declarer_hand, dummy_hand)
+
+
+
+        return deal_done
+    }
+
+
+    
+
 }
 
 exports.Game.prototype.prepareDraw = function(){
@@ -597,6 +732,7 @@ exports.Game.prototype.determinize = function(){
         }
         else{
             console.log("############## failde, draw again ##############")
+            regular_count++
             if(regular_count % 500 == 0){
                 console.log(`info: finish_count ${finished_count}, draw_order: ${sorted_idx}, draw_need ${draw_need_num}, draw_ready_temp: ${draw_ready_num_temp}, draw_ready: ${draw_ready_num}`)
                 huoesuhoetuhosehueons
@@ -694,8 +830,14 @@ exports.Game.prototype.basic_play = function(player_idx, card_rank, card_table) 
         this.lead_suit = suit
     }
     else{
+        // add ruff
         if(suit != this.lead_suit){
-            follow_suit = DISCARD
+            if((this.lead_suit!=this.turmp) && (suit == this.trump) ){
+                follow_suit = RUFF
+            }
+            else{
+                follow_suit = DISCARD
+            }
         }
     }
 
@@ -844,8 +986,8 @@ exports.Game.prototype.afterAction = function () {
         discard_suit = this.previous_lead_suit
     }
     
-    
-    if(this.card_played[previous_id][IF_FOLLOWED] == DISCARD){
+    // include ruff, also unable to follow
+    if(this.card_played[previous_id][IF_FOLLOWED] != FOLLOW){
         console.log(`previous_id: ${previous_id}`)
         for(let i=0; i<player_num; i++){
             if(i!=previous_id){
@@ -871,8 +1013,11 @@ exports.Game.prototype.trickWin = function() {
         let best_rank = total_cards
         let best_player = UNKNOWN
 
+        let if_ruff = false
+        let ruff_rank = total_cards
 
-        let jack_count = 0
+
+        //let jack_count = 0
         let lowest_rank = 0
         let lowest_pure_rank = ACE
         let lowest_player = UNKNOWN
@@ -885,10 +1030,19 @@ exports.Game.prototype.trickWin = function() {
         for(let i=0; i<player_num; i++){
             let if_follow = this.card_played[i][IF_FOLLOWED]
             let rank_i = this.card_played[i][RANK]
-            
+
+
+            if(if_follow == RUFF){
+                if_ruff = true
+
+                if(rank_i < ruff_rank){
+                    ruff_rank = rank_i
+                    best_player = i
+                }
+            }
             // smaller is better
             // at least lead_card will be selected
-            if( if_follow == FOLLOW && rank_i < best_rank){
+            else if( !if_ruff && if_follow == FOLLOW && rank_i < best_rank){
                 best_rank = rank_i
                 best_player = i
             }
@@ -896,9 +1050,11 @@ exports.Game.prototype.trickWin = function() {
 
             // jack count
             let pure_rank = rank_i % onesuit_max
+            /*
             if(pure_rank == JACK){
                 jack_count -= 1
             }
+            */
 
 
             // larger is worse
@@ -946,7 +1102,7 @@ exports.Game.prototype.trickWin = function() {
 
         // add score
         //this.score[best_player] += 1
-        this.score[lowest_player] += jack_count
+        //this.score[lowest_player] += jack_count
 
 
         // str for html
@@ -962,12 +1118,15 @@ exports.Game.prototype.trickWin = function() {
                 this.trick_str += `<span style="color: green; bold;">${card_letter} </span>||| &nbsp;`
             }
             else if(i == lowest_player){
+                /*
                 if(jack_count <0){
                     this.trick_str += `<span style="color: red; bold;">${card_letter}(${jack_count}) </span>| &nbsp;`
                 }
                 else{
                     this.trick_str += `<span style="color: red; bold;">${card_letter} </span>||| &nbsp;`
                 }
+                */
+                this.trick_str += `<span style="color: red; bold;">${card_letter} </span>||| &nbsp;`
             }
             else{
                 this.trick_str += `${card_letter} ||| &nbsp;`
@@ -986,6 +1145,8 @@ exports.Game.prototype.trickWin = function() {
 
         this.previous_lead_suit = this.lead_suit
         this.lead_suit = null;
+    
+        this.trick_count[best_player] ++
 
         return best_player
     }
@@ -995,90 +1156,30 @@ exports.Game.prototype.trickWin = function() {
 
 exports.Game.prototype.endRound = function () {
     // return need cross scope
-    const win_score = 1
-    const neutral = 0.25
-    const lose_score = 0
-    var winners = Array(player_num).fill(neutral)
-    var losers = Array(player_num).fill(neutral)
-    let best_score = -999
-    let least_score = INIT_SCORE-1
+    var winners = Array(player_num).fill(0)
 
-    let winner_count = 0
-    let loser_count = 0
-    for(let i=0; i<player_num; i++){
-        let score = this.score[i]
+    let team_tricks = Array(2).fill(0)
 
-        if(score <= least_score){
-            if (score < least_score){
-                least_score = score
+    team_tricks[0] = this.trick_count[0] + this.trick_count[2]
+    team_tricks[1] = this.trick_count[1] + this.trick_count[3]
 
-                loser_count = 0
-                for(let j=0; j<i; j++){
-                    if(losers[j] == 0){
-                        losers[j] = neutral
-                    }
-                }
-            }
+    let declarer_team = (this.declarer-1) % 2
+    let defense_team = (declarer_team+1) % 2
 
-            loser_count ++
-            losers[i] = lose_score
-        }
+    let {scores, score_ratio} = bridgeDatas.Counter.scoring(this.contract_level, team_tricks[declarer_team], true)
 
-        // allow score even
-        // still logic error if all -1
-        if(score >= best_score){
-            if (score > best_score){
-                best_score = score
-
-                // clear previous winners
-                winner_count = 0
-                for(let j=0; j<i; j++){
-                    if(winners[j] == win_score){
-                        winners[j] = neutral
-                    }
-                }
-            }
-
-            winner_count ++
-            winners[i] = win_score
-        }
-
+    if(scores >= 0){
+        winners[declarer_team] = score_ratio
+        winners[declarer_team+2] = score_ratio
     }
+    else {
 
-
-    if(loser_count > 1){
-        for(let i=0; i<player_num; i++){
-            if(losers[i] == lose_score){
-                losers[i] = neutral / 2.0
-            }
-        }
-    }
-
-    if(winner_count > 1){
-        for(let i=0; i<player_num; i++){
-            if(winners[i] == win_score){
-                winners[i] = winners[i] / 2.0
-            }
-        }
-    }
-
-    // fill in
-    for(let i=0; i<player_num; i++){
-        // co winners still 0.5 larger than neutral 0.25, co losers 0.125 must lower than neutral
-        if(winners[i] == neutral && losers[i] < neutral){
-            winners[i] = losers[i]
-        }
+        winners[defense_team] = score_ratio
+        winners[defense_team+2] = score_ratio
     }
 
     return winners
-    
-    /*
-    for(let i=0; i<player_num; i++) {
-        this.score[i] = this.score[i] / INIT_SCORE
-    }
 
-    return structuredClone(this.score)
-    */
 }
 
 

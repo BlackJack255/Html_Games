@@ -256,11 +256,13 @@
 
 
         if(game.isGameOver()){
+            let trick_str = ""
             let win_str = ""
             for(let i=0; i<game.winner_arr.length; i++){
+                trick_str += String(game.trick_count[i]) + "| "
                 win_str += String(game.winner_arr[i]) + "| "
             }
-            result.innerHTML += `${win_str}`
+            result.innerHTML += `tricks: ${trick_str}, final: ${win_str}`
         }
 
         console.log("----------------------------------------------------")
@@ -291,6 +293,13 @@
 
     function newGame() {
         game = new cardgame.Game()
+
+        let deal_done = false
+        while(!deal_done)
+        {
+            game.deal()
+            deal_done = game.bidding()
+        }
 
         ai = new ismcts.MCTSPlayer({ nTrials: maxTrials, rewardsFunc: game.rewardsFunc });
 
