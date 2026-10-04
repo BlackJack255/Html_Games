@@ -978,18 +978,6 @@ exports.Game.prototype.determinize = function(){
                 // public played
                 draw_regular_ready_num[i] --
             }
-
-            // check if drawned card hold, insert if hold
-            if(private_table[i][j]!=UNKNOWN){
-                // private_table[i][j] should be USED or VALID
-                // add logic >UNKNOWN, now there's private NOT_HAVE
-                if(private_table[i][j] > UNKNOWN){
-                    // player i holding or played
-                    let card_rank = j
-                    insertCard(i, card_rank, private_table[i][j], this.simu_table)
-                    draw_need_num[i] --
-                }
-            }
         }
     }
 
