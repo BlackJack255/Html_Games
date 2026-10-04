@@ -42,6 +42,8 @@
     var current_plays = document.getElementById("current-plays")
     var collect_hands = document.getElementById("collect-hands")
 
+    var replay_again = document.getElementById("replay-again")
+
     var prevSearchDataTurn = 0;
     var prevSearchData = "";
     var currSearchData = "";
@@ -234,6 +236,32 @@
             }
         }
     }
+
+    function replayAgain() {
+        game.replay()
+
+        for(let i=0; i<player_num; i++){
+            searchData[i].innerHTML = `${i}, data${i} here`
+        }
+
+        // remove selected, played
+        for(let i=0; i<center_piles.children.length; i++){
+            let card_div = center_piles.children[i]
+
+            card_div.classList.remove("selected")
+            card_div.classList.remove("played")
+
+        }
+        // clear innerHTML
+        current_plays.innerHTML = ""
+        result.innerHTML = "Result:\n"
+        collect_hands.innerHTML = ""
+
+        human_turn = false
+    }
+
+
+
     // function connect to game Nimbly, check if cilck valid
     // try regular div, not button
 
@@ -285,6 +313,8 @@
 
             searchData[game.currentPlayer-1].innerHTML = "<pre>"+prevSearchData+currSearchData+"</pre>";
         }
+
+        replay_again.addEventListener("click", () => replayAgain())
     }
 
 

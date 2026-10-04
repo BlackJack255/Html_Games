@@ -13,6 +13,8 @@ let piles_num = 3
 let pile_len = Math.floor(total_cards/piles_num)
 let pick_max = 3
 
+let start_player = -1
+
 
 const DRAWN = 1
 const READY = 0
@@ -195,7 +197,34 @@ exports.Game.prototype.deal = function() {
     }
 
     this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
+    start_player = this.currentPlayer
 
+}
+
+exports.Game.prototype.replay = function() {
+
+    for (let i=0; i<piles_num; i++){
+        for (let j=0; j<pile_len; j++){
+            this.table_piles[IF_PICKED][i][j] = READY
+        }
+        
+    }
+
+    // initial, reset
+    for(let i=0; i<piles_num; i++){
+        this.piles_top[i] = pile_len - 1
+    }
+
+    for(let i=0; i<player_num; i++){
+        for(let j=0; j<hold_max; j++){
+            this.player_collects[i][j] = UNKNOWN
+        }
+        this.player_slots[i] = hold_max
+    }
+
+    this.winner_arr = null
+
+    this.currentPlayer = start_player
 }
 
 function card2Letter(card){
