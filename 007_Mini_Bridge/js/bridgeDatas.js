@@ -21,6 +21,7 @@ const LOSERS = 0
 const STOPPERS = 1
 const TOP_WINNERS = 2
 const POTEN_WINNER = 3
+const POWER_TWO = 4
 
 const TRUMP_MARGIN = 1
 const MARGIN = 1
@@ -79,45 +80,45 @@ exports.HCP.prototype.rank2HCP = function(card_rank) {
 exports.Counter = function() {
     // honors map to table idx
     this.count_table = [
-                        [    0,     3,   3,     0],
-                        [  0.5,   2.5,   1,   1.5],
-                        [  0.5,   2.5,   2,   0.5],
-                        [0.875, 2.125,   2, 0.125],
-                        [ 1.25,  1.75,   1,  0.75],
+                        [    0,     3,   3,     0,  0],
+                        [  0.5,   2.5,   1,   1.5,  1],
+                        [  0.5,   2.5,   2,   0.5,  1],
+                        [0.875, 2.125,   2, 0.125,  3],
+                        [ 1.25,  1.75,   1,  0.75,  2],
 
-                        [1.125, 1.875,   1, 0.875],
-                        [    1,     2,   0,     2],
-                        [  1.5,   1.5,   0,   1.5],
-                        [  1.5,   1.5,   0,   1.5],
-                        [    2,     1,   0,     1],
+                        [1.125, 1.875,   1, 0.875,  3],
+                        [    1,     2,   0,     2,  0],
+                        [  1.5,   1.5,   0,   1.5,  1],
+                        [  1.5,   1.5,   0,   1.5,  1],
+                        [    2,     1,   0,     1,  0],
 
-                        [    1,     2,   2,     0],
-                        [  1.5,   1.5,   1,   0.5],
-                        [1.875, 1.125,   1, 0.125],
-                        [    2,     1,   1,     0],
-                        [  1.5,   1.5,   0,   1.5],
+                        [    1,     2,   2,     0,  0],
+                        [  1.5,   1.5,   1,   0.5,  1],
+                        [1.875, 1.125,   1, 0.125,  3],
+                        [    2,     1,   1,     0,  0],
+                        [  1.5,   1.5,   0,   1.5,  1],
 
-                        [    2,     1,   0,     1],
-                        [2.125, 0.875,   0, 0.875],
-                        [2.125, 0.875,   0, 0.875],
-                        [  2.5,   0.5,   0,   0.5],
-                        [2.875, 0.125,   0, 0.125],
+                        [    2,     1,   0,     1,  0],
+                        [2.125, 0.875,   0, 0.875,  3],
+                        [2.125, 0.875,   0, 0.875,  3],
+                        [  2.5,   0.5,   0,   0.5,  1],
+                        [2.875, 0.125,   0, 0.125,  3],
 
-                        [    2,     1,   1,     0],
-                        [  2.5,   0.5,   0,   0.5],
-                        [ 2.75,  0.25,   0,  0.25],
-                        [    3,     0,   0,     0],
-                        [    3,     0,   0,     0],
+                        [    2,     1,   1,     0,  0],
+                        [  2.5,   0.5,   0,   0.5,  1],
+                        [ 2.75,  0.25,   0,  0.25,  2],
+                        [    3,     0,   0,     0,  0],
+                        [    3,     0,   0,     0,  0],
 
-                        [    0,     2,   2,     0],
-                        [  0.5,   1.5,   1,   0.5],
-                        [    1,     1,   1,     0],
-                        [    1,     1,   0,     1],
-                        [  1.5,   0.5,   0,   0.5],
-                        [    2,     0,   0,     0],
+                        [    0,     2,   2,     0,  0],
+                        [  0.5,   1.5,   1,   0.5,  1],
+                        [    1,     1,   1,     0,  0],
+                        [    1,     1,   0,     1,  0],
+                        [  1.5,   0.5,   0,   0.5,  1],
+                        [    2,     0,   0,     0,  0],
 
-                        [    0,     1,   1,     0],
-                        [    1,     0,   0,     0],
+                        [    0,     1,   1,     0,  0],
+                        [    1,     0,   0,     0,  0],
 
 
 
@@ -292,13 +293,20 @@ exports.Counter.prototype.loserCount = function(declarer_hand, dummy_hand) {
             
             losers[i] = this.count_table[table_idx][LOSERS]
 
+            // to avoid carrying up to integer or less demical
+            // eg 1.5 loser + 4th 0.5 = 2, 0.5 missing
+            // so add small remainder to maintain demical
+            let power_two = this.count_table[table_idx][POWER_TWO]
+            power_two = Math.max(power_two+1, 4)
+            let remainder = 0.5**power_two
+
             // if 4th card is J or T, no loser, else 0.5
             // 5th+ 0.25 loser
             for(let k=top_len; k<declarer_len; k++){
                 if(k < oppon_len){
                     if(k<=3){
                         if(card_arr[k] > T){
-                            losers[i] += 0.5
+                            losers[i] += 0.5 + remainder
                         }
                     }
                     else if(k>3){
@@ -322,13 +330,20 @@ exports.Counter.prototype.loserCount = function(declarer_hand, dummy_hand) {
 
             trump_losers[i] = this.count_table[full_idx][LOSERS]
 
+            // to avoid carrying up to integer or less demical
+            // eg 1.5 loser + 4th 0.5 = 2, 0.5 missing
+            // so add small remainder to maintain demical
+            let power_two = this.count_table[full_idx][POWER_TWO]
+            power_two = Math.max(power_two+1, 4)
+            let remainder = 0.5**power_two
+
             // if 4th card is J or T, no loser, else 0.5
             // 5th+ 0.25 loser
             for(let k=trump_top_len; k<max_len; k++){
                 if(k<oppon_len){
                     if(k<=3){
                         if(card_arr[k] > T){
-                            trump_losers[i] += 0.5
+                            trump_losers[i] += 0.5 + remainder
                         }
                     }
                     else if(k>3){
