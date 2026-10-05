@@ -35,6 +35,9 @@
     const msgP = document.getElementById("msg");
     var searchData = document.querySelectorAll("[id^='searchdata-']")
 
+    var game_level = document.getElementsByName("game-level")
+    var deal_button = document.getElementById("deal")
+
     var center_piles = document.getElementById("center-piles")
     var pick = document.getElementById("pick")
     
@@ -266,6 +269,9 @@
     // try regular div, not button
 
     function layoutTable(game) {
+        // clear previous children
+        center_piles.replaceChildren()
+
         let table_piles = game.table_piles[RANK]
 
         for(let i=0; i<table_piles.length; i++){
@@ -285,11 +291,41 @@
         }
     }
 
+    function dealCards() {
+        let new_onesuit_max = -1
+        
+        for(var i = 0; i < game_level.length; i++){
+            if(game_level[i].checked){
+                new_onesuit_max = Number(game_level[i].value)
+                console.log(`value type: ${typeof new_onesuit_max}`)
+            }
+        }
+
+        // reset several length
+        onesuit_max = new_onesuit_max
+        total_cards = suit_num * onesuit_max
+        pile_len = Math.floor(total_cards/piles_num)
+
+        game.setNumCards(new_onesuit_max)
+        game.deal()
+
+        // html css grid length
+        document.documentElement.style.setProperty('--pile-len', pile_len)
+        layoutTable(game)
+
+        // clear innerHTML
+        current_plays.innerHTML = ""
+        result.innerHTML = "Result:\n"
+        collect_hands.innerHTML = ""
+
+        human_turn = false
+    }
+
 
     function newGame() {
         game = new cardgame.Game()
 
-        layoutTable(game)
+        deal_button.addEventListener("click", () => dealCards())
 
         ai = new mcts.MCTSPlayer({ nTrials: maxTrials, rewardsFunc: game.rewardsFunc });
 

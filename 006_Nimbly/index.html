@@ -12,7 +12,27 @@
                 <div id="searchdata-2"></div>
                 <div id="searchdata-3"></div>
             </div>
+            <h3>Choose game level</h3>
+            <!-- radio: https://csveda.com/html-radiobutton/ -->
+            <div>
+                <input type="RADIO" id="game-level" name="game-level"  value="3" checked>
+                <label for="game-level">Beginner level 12 cards</label>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="RADIO" id="game-level" name="game-level"  value="6">
+                <label for="game-level">Easy level 24 cards</label>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="RADIO" id="game-level" name="game-level"  value="9">
+                <label for="game-level">Standard level 36 cards</label>
+            </div>
+            <br>
+            <button type="button" id="deal">Deal</button>
+            <br>
+            <span>---------------------------------------------------</span>
+            <br>
+            <br>
+
             <div id="center-piles" class="piles"></div>
+            <br>
             <button type="button" id="pick">Pick</button>
             <br>
             

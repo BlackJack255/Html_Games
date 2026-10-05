@@ -1,7 +1,11 @@
 
+:root{
+    --pile-len: 12;
+}
+
 .piles {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(var(--pile-len), 1fr);
     grid-template-rows: repeat(3, 1fr);
 }
 

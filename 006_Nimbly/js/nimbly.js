@@ -136,9 +136,6 @@ exports.Game = function(o) {
         this.scores = null
         this.winner_arr = null
 
-
-        this.deal()
-
     }
 }
 
@@ -148,6 +145,28 @@ exports.Game.prototype = Object.create(mcts.Game.prototype);
 exports.Game.prototype.copyGame = function() {
     return new exports.Game(this);
 };
+
+exports.Game.prototype.setNumCards = function(new_onesuit_max) {
+    onesuit_max = new_onesuit_max
+    total_cards = suit_num * onesuit_max
+    hold_max = Math.floor(total_cards/player_num)
+    pile_len = Math.floor(total_cards/piles_num)
+
+    // new empty tables
+    this.table_piles = [
+                                ...Array(2)
+                                    .fill(null)
+                                    .map(() => Array(piles_num)
+                                                    .fill(null)
+                                                    .map(() => Array(pile_len)) )
+                            ]
+
+    this.player_collects = [
+                                ...Array(player_num)
+                                    .fill(null)
+                                    .map(() => Array(hold_max))
+                                ]
+}
 
 exports.Game.prototype.deal = function() {
     var public_cards = Array(total_cards).fill(READY)
@@ -195,6 +214,7 @@ exports.Game.prototype.deal = function() {
         }
         this.player_slots[i] = hold_max
     }
+    this.winner_arr = null
 
     this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
     start_player = this.currentPlayer
