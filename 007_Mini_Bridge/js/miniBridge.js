@@ -595,19 +595,6 @@ exports.Game.prototype.prepareDraw = function(){
                 }
             }
         }
-        // public available and player_i not have
-        else if(public_cards[j]==READY && private_i.private_table[player_i][j]<=UNKNOWN){
-            // skip player_i self
-            for(let ii=0; ii<player_num&&ii!=player_i; ii++){
-                let pure_rank = j % onesuit_max
-                if(pure_rank <= JACK){
-                    private_i.final_honor_table[ii][j] = READY
-                }
-                else{
-                    private_i.final_regular_table[ii][j] = READY
-                }
-            }
-        }
     }
     // player_i's simu_hcp_remain should be zero
     if(this.simu_hcp_remain[player_i] != 0){
