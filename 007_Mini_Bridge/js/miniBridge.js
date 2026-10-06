@@ -1591,7 +1591,7 @@ exports.Game.prototype.afterAction = function () {
     // remember currentTurn, currentPlayer already updated
     // so using previousPlayer
 
-    public_cards[this.playedCard] = USED
+    public_cards[this.playedCard] = DRAWN
     
     // deal with information set
     // record played card, for all players private_view, including currentPlayer
