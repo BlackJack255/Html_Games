@@ -1503,7 +1503,7 @@ exports.Game.prototype.doAction = function (a, real_play=false) {
 
 
 // logic about discard
-function record_discard(player_pov, player_j, discard_suit) {
+exports.Game.prototype.record_discard = function(player_pov, player_j, discard_suit) {
     let suit_status = discard_status[discard_suit]
     let start = discard_suit * onesuit_max
     let end = start + onesuit_max
@@ -1552,6 +1552,11 @@ function record_discard(player_pov, player_j, discard_suit) {
             console.log(`found target id: ${target_id}`)
 
             let pov_table = private_view_arr[player_pov].private_table
+            // dummy should get same additional information if declarer got one
+            let dummy_table = null
+            if(player_pov == this.declarer-1){
+                dummy_table = private_view_arr[this.dummy-1].private_table
+            }
             // direct using start, end
             for(let j=start; j<end; j++){
                 // player_pov self may have info that NOT_HAVE, so <=UNKNOWN
@@ -1559,6 +1564,9 @@ function record_discard(player_pov, player_j, discard_suit) {
                 if(public_cards[j]==READY && pov_table[target_id][j]==UNKNOWN && pov_table[player_pov][j]<=UNKNOWN){
                     // same as insertCard
                     pov_table[target_id][j] = VALID
+                    if(dummy_table != null){
+                        dummy_table[target_id][j] = VALID
+                    }
                 }
             }
 
@@ -1599,7 +1607,7 @@ exports.Game.prototype.afterAction = function () {
         console.log(`previous_id: ${previous_id}`)
         for(let i=0; i<player_num; i++){
             if(i!=previous_id){
-                record_discard(i, previous_id, discard_suit)
+                this.record_discard(i, previous_id, discard_suit)
             }
         }
     }
@@ -1651,7 +1659,7 @@ exports.Game.prototype.revealDummy = function() {
         // direct call should be fine, discard_suit_count less than 2
         // dummy is the first one "discard"
         for(let i=0; i<suit_num; i++){
-            record_discard(this.declarer-1, dummy_id, i)
+            this.record_discard(this.declarer-1, dummy_id, i)
         }
     }
 }
