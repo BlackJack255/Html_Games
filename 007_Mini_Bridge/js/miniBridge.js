@@ -843,7 +843,7 @@ exports.Game.prototype.prepareDraw = function(){
             }
 
             hcp_draw.start_end[i] = [start_idx, end_idx]
-            console.log(`in prepareDraw, player ${i}, hcp valid start end: ${hcp_draw.start_end[i]}`)
+            console.log(`in prepareDraw, player_i: ${player_i}, look at target ${i}, hcp got: ${this.hcp_got}, hcp_remain: ${this.hcp_remain}, simu_remain: ${this.simu_hcp_remain}, hcp valid start end: ${hcp_draw.start_end[i]}`)
 
             if(end_idx-start_idx <= 0){
                 console.log(`found interval too narrow, strange, start: ${start_idx}, end: ${end_idx}, actual hcp remain: ${this.simu_hcp_remain[current_player]}`)
@@ -1626,6 +1626,14 @@ exports.Game.prototype.revealDummy = function() {
                         insertCard(dummy_id, j, this.hand_table[dummy_id][j], private_view_arr[i].private_table)
                     }
                 }
+            }
+        }
+
+        // record dummy's card as public
+        for(let j=0; j<total_cards; j++){
+            // actually dummy's hand should all VALID
+            if(this.hand_table[dummy_id][j] >= VALID){
+                public_cards[j] = DRAWN
             }
         }
 
