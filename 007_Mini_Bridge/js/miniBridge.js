@@ -356,7 +356,7 @@ exports.Game.prototype.deal = function(){
     // temporary first trick random player lead
     this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
     // for test
-    this.currentPlayer = 2
+    //this.currentPlayer = 2
     start_player = this.currentPlayer
     
 
