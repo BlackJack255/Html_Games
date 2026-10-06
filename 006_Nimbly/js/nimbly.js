@@ -13,6 +13,8 @@ let piles_num = 3
 let pile_len = Math.floor(total_cards/piles_num)
 let pick_max = 3
 
+let init_pile_len = Array(piles_num)
+
 let start_player = -1
 
 
@@ -106,6 +108,18 @@ exports.Game = function(o) {
     }
     else {
         mcts.Game.call(this, { nPlayers: player_num });
+
+        let card_remain = total_cards % piles_num
+        for(let i=0; i<piles_num; i++){
+            init_pile_len[i] = pile_len
+            if(i<card_remain){
+                init_pile_len[i] ++
+            }
+        }
+
+        pile_len = Math.ceil(total_cards/piles_num)
+
+
         // [rank if picked] [pile 0 1 2] [0-11 cards]
         this.table_piles = [
                                 ...Array(2)
@@ -152,6 +166,16 @@ exports.Game.prototype.setNumCards = function(new_onesuit_max) {
     hold_max = Math.floor(total_cards/player_num)
     pile_len = Math.floor(total_cards/piles_num)
 
+    let card_remain = total_cards % piles_num
+    for(let i=0; i<piles_num; i++){
+        init_pile_len[i] = pile_len
+        if(i<card_remain){
+            init_pile_len[i] ++
+        }
+    }
+
+    pile_len = Math.ceil(total_cards/piles_num)
+
     // new empty tables
     this.table_piles = [
                                 ...Array(2)
@@ -187,11 +211,19 @@ exports.Game.prototype.deal = function() {
         }
     }
 
+    // initial, reset
+    for(let i=0; i<piles_num; i++){
+        this.piles_top[i] = init_pile_len[i]-1
+    }
+
+    let card_count = 0
     for (let i=0; i<piles_num; i++){
-        let card_array = deck.slice(i*pile_len, (i+1)*pile_len)
 
+        //let card_array = deck.slice(i*pile_len, (i+1)*pile_len)
+        let card_array = deck.slice(card_count, card_count+init_pile_len[i])
+        card_count += init_pile_len[i]
 
-        for (let j=0; j<pile_len; j++){
+        for (let j=0; j<init_pile_len[i]; j++){
             let card = card_array[j]
             
             this.table_piles[RANK][i][j] = card
@@ -203,10 +235,6 @@ exports.Game.prototype.deal = function() {
 
 
 
-    // initial, reset
-    for(let i=0; i<piles_num; i++){
-        this.piles_top[i] = pile_len - 1
-    }
 
     for(let i=0; i<player_num; i++){
         for(let j=0; j<hold_max; j++){
@@ -224,7 +252,7 @@ exports.Game.prototype.deal = function() {
 exports.Game.prototype.replay = function() {
 
     for (let i=0; i<piles_num; i++){
-        for (let j=0; j<pile_len; j++){
+        for (let j=0; j<init_pile_len[i]; j++){
             this.table_piles[IF_PICKED][i][j] = READY
         }
         
@@ -232,7 +260,7 @@ exports.Game.prototype.replay = function() {
 
     // initial, reset
     for(let i=0; i<piles_num; i++){
-        this.piles_top[i] = pile_len - 1
+        this.piles_top[i] = init_pile_len[i]-1
     }
 
     for(let i=0; i<player_num; i++){

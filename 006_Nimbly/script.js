@@ -23,7 +23,7 @@
     let total_cards = suit_num * onesuit_max
 
     let piles_num = 3
-    let pile_len = Math.floor(total_cards/piles_num)
+    let pile_len = Math.ceil(total_cards/piles_num)
     let pick_max = 3
 
     // no need after human click pick involved
@@ -304,7 +304,7 @@
         // reset several length
         onesuit_max = new_onesuit_max
         total_cards = suit_num * onesuit_max
-        pile_len = Math.floor(total_cards/piles_num)
+        pile_len = Math.ceil(total_cards/piles_num)
 
         game.setNumCards(new_onesuit_max)
         game.deal()
