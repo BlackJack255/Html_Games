@@ -12,6 +12,8 @@ const suit_num = 4
 let onesuit_max = 13
 let total_cards = suit_num * onesuit_max
 
+const dummy_reveal_turn = 2
+
 const SIMU_DRAWN = 2
 const DRAWN = 1
 const READY = 0
@@ -354,7 +356,7 @@ exports.Game.prototype.deal = function(){
     // temporary first trick random player lead
     this.currentPlayer = Math.floor( Math.random()* player_num ) + 1
     // for test
-    //this.currentPlayer = 4
+    this.currentPlayer = 2
     start_player = this.currentPlayer
     
 
@@ -1615,6 +1617,48 @@ exports.Game.prototype.afterAction = function () {
         }
     }
     
+}
+
+exports.Game.prototype.revealDummy = function() {
+    if(this.currentPlayer != this.dummy){
+        console.log(`something was wrong, turn 2 should be dummy's turn`)
+        process.exit(0)
+    }
+
+    if(this.currentTurn == dummy_reveal_turn){
+
+        // to all pov's private table
+        // loop
+        // insertCard VALID
+        let dummy_id = this.currentPlayer - 1
+        for(let i=0; i<player_num; i++){
+            if(i!=dummy_id){
+                for(let j=0; j<total_cards; j++){
+                    // actually dummy's hand should all VALID
+                    if(this.hand_table[dummy_id][j] >= VALID){
+                        insertCard(dummy_id, j, this.hand_table[dummy_id][j], private_view_arr[i].private_table)
+                    }
+                }
+            }
+        }
+
+        // dummy record declarer's hand as well
+        let declarer_id = this.declarer-1
+        for(let j=0; j<total_cards; j++){
+            // actually declarer's hand should also all VALID
+            if(this.hand_table[declarer_id][j] >= VALID){
+                insertCard(declarer_id, j, this.hand_table[declarer_id][j], private_view_arr[dummy_id].private_table)
+            }
+        }
+
+        
+        // discard
+        // direct call should be fine, discard_suit_count less than 2
+        // dummy is the first one "discard"
+        for(let i=0; i<suit_num; i++){
+            record_discard(this.declarer-1, dummy_id, i)
+        }
+    }
 }
 
 function get_play_order(lead_id, current_id) {

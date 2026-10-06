@@ -16,6 +16,23 @@
     const real_play = true
 
     const human_id = 4-1
+    const human_partner = 2-1
+    let dummy_id = -1
+    const dummy_reveal_turn = 2
+
+    let dummy_cardMap = null
+
+    const playerMap = new Map()
+    playerMap.set(1, "West")
+    playerMap.set(2, "North")
+    playerMap.set(3, "East")
+    playerMap.set(4, "South")
+
+    const suitMap = new Map()
+    suitMap.set(0, "S")
+    suitMap.set(1, "H")
+    suitMap.set(2, "D")
+    suitMap.set(3, "C")
 
     // have card
     const USED = 1
@@ -30,6 +47,10 @@
     const msgP = document.getElementById("msg");
     var searchData = document.querySelectorAll("[id^='searchdata-']")
 
+    var hcp_info = document.getElementById("hcp-info")
+    var contract_info = document.getElementById("contract-info")
+
+    var dummy_hands = document.getElementById("dummy-hands")
     var human_hands = document.getElementById("human-hands")
     var current_plays = document.getElementById("current-plays")
     var result = document.getElementById("result")
@@ -76,6 +97,19 @@
             current_plays.innerHTML += `<br>`
         }
 
+        // if ai game.dummy played, disable button
+        // dummy not human, nor partnor
+        if((dummy_id <0) && (game.previousPlayer==game.dummy) && (game.dummy-1!=human_partner) && (game.dummy-1!=human_id) ){
+            if(dummy_cardMap==null){
+                console.log(`Since dummy is opponent, dummy_cardMap should be prepared, but null`)
+            }
+            // cardMap
+            let rank = ai_action.card_rank
+            let idx = dummy_cardMap.get(rank)
+            let card_i = dummy_hands.children[idx]
+            card_i.disabled = true
+        }
+
         // next oneCard
         oneCard(card_count+1, start_idx)
 
@@ -98,8 +132,13 @@
     function oneCard(card_count, start_idx) {
         let player_idx = (start_idx+card_count) % player_num
 
+        if(game.currentTurn == dummy_reveal_turn){
+            dummyReveal()
+        }
+
         // change this to stop at human id
-        if(card_count >= player_num || player_idx==human_id){
+        // also stop if dummy is human_partner
+        if(card_count >= player_num || player_idx==human_id || player_idx==dummy_id){
 
             // post processing trick if all players played
             // do all played case only and skip human if card_count reached max
@@ -107,7 +146,7 @@
                 dealTrick()
                 nextTrick.removeAttribute("disabled")
             }
-            else if(player_idx == human_id){
+            else if(player_idx==human_id || player_idx==dummy_id){
                 // allow human play
                 nextTrick.disabled = true
                 human_turn = true
@@ -196,50 +235,60 @@
         if(human_turn){
             let card_rank = event.target.value
 
-            // check if in allActions
-            let human_allAct = game.humanActions()
-            let allow = false
-            for(let i=0; i<human_allAct.length && !allow ; i++){
-                let card_i = human_allAct[i].card_rank
-                if(card_rank == card_i){
-                    allow = true
+            // also check game.currentPlayer
+            if(Number(event.target.dataset.player_id) == game.currentPlayer){
+                // check if in allActions
+                let human_allAct = game.humanActions()
+                let allow = false
+                for(let i=0; i<human_allAct.length && !allow ; i++){
+                    let card_i = human_allAct[i].card_rank
+                    if(card_rank == card_i){
+                        allow = true
+                    }
                 }
-            }
-            if(allow){
-                let human_action = new cardgame.Action(card_rank)
-                game.doAction(human_action, real_play)
-                game.afterAction()
+                if(allow){
+                    let human_action = new cardgame.Action(card_rank)
+                    game.doAction(human_action, real_play)
+                    game.afterAction()
 
-                let card_letter = game.playedLetter
+                    let card_letter = game.playedLetter
 
-                // print on html
-                current_plays.innerHTML += `&nbsp; ${card_letter} &nbsp;||`
+                    // print on html
+                    current_plays.innerHTML += `&nbsp; ${card_letter} &nbsp;||`
 
-                if(game.currentPlayer == 1) {
-                    current_plays.innerHTML += `<br>`
+                    if(game.currentPlayer == 1) {
+                        current_plays.innerHTML += `<br>`
+                    }
+
+                    // human_id + 1 to finish a trick
+                    // card_count continues
+                    // no more lead
+                    let card_count = game.previousPlayer-1 - start_idx
+                    if(card_count < 0){
+                        card_count = card_count + player_num
+                    }
+
+                    human_turn = false
+                    event.target.disabled = true
+
+                    oneCard(card_count+1, start_idx)
                 }
-
-                // human_id + 1 to finish a trick
-                // card_count continues
-                // no more lead
-                let card_count = game.previousPlayer-1 - start_idx
-                if(card_count < 0){
-                    card_count = card_count + player_num
+                else{
+                    msgP.textContent = `choose another card, need follow suit, see allAction: ${human_allAct}`
                 }
-
-                human_turn = false
-                event.target.disabled = true
-
-                oneCard(card_count+1, start_idx)
             }
             else{
-                msgP.textContent = `choose another card, need follow suit, see allAction: ${human_allAct}`
+                msgP.textContent = `seems not player's turn, player ${event.target.dataset.player_id} wants to play but currentPlayer is ${game.currentPlayer}`
             }
         }
         else{
             msgP.textContent = `human_turn? ${human_turn}, consider click Next Trick first`
         }
     }
+    function dummyWarn() {
+        msgP.textContent = `Dummy is not your partner under this contract`
+    }
+
 
     function dealTrick() {
         // for print html only
@@ -268,6 +317,48 @@
         console.log("----------------------------------------------------")
     }
 
+    function dummyReveal() {
+        if(game.currentTurn == dummy_reveal_turn){
+            game.revealDummy()
+
+            // card button
+            // also listen afterMove
+            let dummy_pos = game.dummy-1
+            // force dummy be North if dummy is human_id
+            if(dummy_pos == human_id){
+                dummy_pos = human_partner
+            }
+            let dummy_card_arr = game.hand_table[dummy_pos]
+            let card_count = 0
+            for(let i=0; i<dummy_card_arr.length; i++){
+                if(dummy_card_arr[i] == VALID){
+                    var card_i = document.createElement('button')
+                    let card_rank = i
+                    let letter = game.num2Letter(card_rank)
+
+                    card_i.textContent = letter
+                    card_i.style.width = "auto";  // Or dynamicButton.style.width = "";
+                    card_i.style.height = "auto";
+                    card_i.value = card_rank
+                    card_i.dataset.player_id = String(game.currentPlayer)
+
+                    // add listener
+                    if(game.currentPlayer-1 == human_partner || (game.currentPlayer-1 == human_id)){
+                        card_i.addEventListener("click", (event) => afterMove(event))
+                    }
+                    else{
+                        dummy_cardMap.set(card_rank, card_count)
+                        card_i.addEventListener("click", () => dummyWarn())
+                    }
+                    card_count++
+
+                    dummy_hands.appendChild(card_i)
+                }
+            }
+        }
+
+    }
+
     function replayAgain() {
         if(game!=null){
             game.replay()
@@ -276,6 +367,11 @@
             for(let i=0; i<cards_array.length; i++){
                 cards_array[i].removeAttribute("disabled")
             }
+
+            if(dummy_cardMap){
+                dummy_cardMap.clear()
+            }
+            dummy_hands.replaceChildren()
 
             for(let i=0; i<player_num; i++){
                 searchData[i].innerHTML = `${i}, data${i} here`
@@ -300,6 +396,28 @@
             game.deal()
             deal_done = game.bidding()
         }
+
+        let hcp_str = `HCP: `
+        for(let i=0; i<player_num; i++){
+            hcp_str += `${playerMap.get(i+1)}: ${game.hcp_got[i]}, `
+        }
+        hcp_info.innerHTML = hcp_str
+
+        let contract_str = `Contract: `
+        // temporary fix base contract level as 6
+        contract_str += `${playerMap.get(game.declarer)}  ${game.contract_level-6}${suitMap.get(game.trump)}`
+        contract_info.innerHTML = contract_str
+
+        // no matter declarer is South(human) or North(partner), force North be dummy
+        if(game.dummy-1 == human_partner || game.dummy-1 == human_id){
+            dummy_id = human_partner
+            dummy_cardMap = null
+        }
+        else{
+            dummy_id = -1
+            dummy_cardMap = new Map()
+        }
+
 
         ai = new ismcts.MCTSPlayer({ nTrials: maxTrials, rewardsFunc: game.rewardsFunc });
 
@@ -337,6 +455,7 @@
                 card_i.style.width = "auto";  // Or dynamicButton.style.width = "";
                 card_i.style.height = "auto";
                 card_i.value = card_rank
+                card_i.dataset.player_id = String(human_id+1)
 
                 // add listener
                 card_i.addEventListener("click", (event) => afterMove(event))
