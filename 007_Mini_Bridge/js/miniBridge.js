@@ -457,7 +457,11 @@ exports.Game.prototype.suitContract = function(declarer_hand, dummy_hand){
 
     // set contract
     this.trump = trump_suit
-    this.contract_level = bid_level
+
+    if(bid_level < 7){
+        console.log(`unable to fewer than 7 tricks, bid_level no longer be ${bid_level}`)
+    }
+    this.contract_level = Math.max(bid_level, 7)
 
 }
 
