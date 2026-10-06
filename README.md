@@ -14,3 +14,5 @@ Contents of html games, with demos to play
 5. Four Jacks (trick-taking game) [(Demo)](https://blackjack255.github.io/Html_Games/005_Four_Jacks/)
 
 6. Nimbly (Nim like card game) [(Demo)](https://blackjack255.github.io/Html_Games/006_Nimbly/)
+
+7. Mini Bridge [(Demo)](https://blackjack255.github.io/Html_Games/007_Mini_Bridge/)
