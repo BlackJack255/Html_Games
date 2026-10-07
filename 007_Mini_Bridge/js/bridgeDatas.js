@@ -80,6 +80,16 @@ exports.HCP.prototype.rank2HCP = function(card_rank) {
 exports.Counter = function() {
     // honors map to table idx
     this.count_table = [
+                        [    0,     1,   1,     0,  0],
+                        [    1,     0,   0,     0,  0],
+
+                        [    0,     2,   2,     0,  0],
+                        [  0.5,   1.5,   1,   0.5,  1],
+                        [    1,     1,   1,     0,  0],
+                        [    1,     1,   0,     1,  0],
+                        [  1.5,   0.5,   0,   0.5,  1],
+                        [    2,     0,   0,     0,  0],
+
                         [    0,     3,   3,     0,  0],
                         [  0.5,   2.5,   1,   1.5,  1],
                         [  0.5,   2.5,   2,   0.5,  1],
@@ -110,64 +120,52 @@ exports.Counter = function() {
                         [    3,     0,   0,     0,  0],
                         [    3,     0,   0,     0,  0],
 
-                        [    0,     2,   2,     0,  0],
-                        [  0.5,   1.5,   1,   0.5,  1],
-                        [    1,     1,   1,     0,  0],
-                        [    1,     1,   0,     1,  0],
-                        [  1.5,   0.5,   0,   0.5,  1],
-                        [    2,     0,   0,     0,  0],
-
-                        [    0,     1,   1,     0,  0],
-                        [    1,     0,   0,     0,  0],
-
-
-
-
                         ]
 
     this.combi2count = new Map()
-    // length >=3
-    this.combi2count.set("AKQ", 0)
-    this.combi2count.set("AQJ", 1)
-    this.combi2count.set("AKJ", 2)
-    this.combi2count.set("AKT", 3)
-    this.combi2count.set("AJT", 4)
-
-    this.combi2count.set("AQT", 5)
-    this.combi2count.set("KQJ", 6)
-    this.combi2count.set("KQT", 7)
-    this.combi2count.set("KJT", 8)
-    this.combi2count.set("QJT", 9)
-
-    this.combi2count.set("AKX", 10)
-    this.combi2count.set("AQX", 11)
-    this.combi2count.set("AJX", 12)
-    this.combi2count.set("ATX", 13)
-    this.combi2count.set("KQX", 14)
-
-    this.combi2count.set("KJX", 15)
-    this.combi2count.set("KTX", 16)
-    this.combi2count.set("QJX", 17)
-    this.combi2count.set("QTX", 18)
-    this.combi2count.set("JTX", 19)
-
-    this.combi2count.set("AXX", 20)
-    this.combi2count.set("KXX", 21)
-    this.combi2count.set("QXX", 22)
-    this.combi2count.set("JXX", 23)
-    this.combi2count.set("XXX", 24)
+    // length 1
+    this.combi2count.set("A", 0)
+    this.combi2count.set("X", 1)
 
     // length 2
-    this.combi2count.set("AK", 25)
-    this.combi2count.set("AQ", 26)
-    this.combi2count.set("AX", 27)
-    this.combi2count.set("KQ", 28)
-    this.combi2count.set("KX", 29)
-    this.combi2count.set("XX", 30)
+    this.combi2count.set("AK", 2)
+    this.combi2count.set("AQ", 3)
+    this.combi2count.set("AX", 4)
+    this.combi2count.set("KQ", 5)
+    this.combi2count.set("KX", 6)
+    this.combi2count.set("XX", 7)
 
-    // length 1
-    this.combi2count.set("A", 31)
-    this.combi2count.set("X", 32)
+    // length >=3
+    this.combi2count.set("AKQ", 8)
+    this.combi2count.set("AQJ", 9)
+    this.combi2count.set("AKJ", 10)
+    this.combi2count.set("AKT", 11)
+    this.combi2count.set("AJT", 12)
+
+    this.combi2count.set("AQT", 13)
+    this.combi2count.set("KQJ", 14)
+    this.combi2count.set("KQT", 15)
+    this.combi2count.set("KJT", 16)
+    this.combi2count.set("QJT", 17)
+
+    this.combi2count.set("AKX", 18)
+    this.combi2count.set("AQX", 19)
+    this.combi2count.set("AJX", 20)
+    this.combi2count.set("ATX", 21)
+    this.combi2count.set("KQX", 22)
+
+    this.combi2count.set("KJX", 23)
+    this.combi2count.set("KTX", 24)
+    this.combi2count.set("QJX", 25)
+    this.combi2count.set("QTX", 26)
+    this.combi2count.set("JTX", 27)
+
+    this.combi2count.set("AXX", 28)
+    this.combi2count.set("KXX", 29)
+    this.combi2count.set("QXX", 30)
+    this.combi2count.set("JXX", 31)
+    this.combi2count.set("XXX", 32)
+
 
 
     // distribution
