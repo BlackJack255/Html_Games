@@ -1845,10 +1845,14 @@ exports.Game.prototype.endRound = function () {
     let {scores, score_ratio} = bridgeDatas.Counter.scoring(this.contract_level, team_tricks[declarer_team], true)
 
     if(scores >= 0){
+        this.score[declarer_team] = scores
+        this.score[declarer_team+2] = scores
         winners[declarer_team] = score_ratio
         winners[declarer_team+2] = score_ratio
     }
     else {
+        this.score[declarer_team] = -scores
+        this.score[declarer_team+2] = -scores
         winners[defense_team] = score_ratio
         winners[defense_team+2] = score_ratio
     }
