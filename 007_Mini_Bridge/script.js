@@ -346,7 +346,7 @@
                     card_i.style.width = "auto";  // Or dynamicButton.style.width = "";
                     card_i.style.height = "auto";
                     card_i.value = card_rank
-                    card_i.dataset.player_id = String(game.currentPlayer)
+                    card_i.dataset.player_id = String(dummy_pos+1)
 
                     // add listener
                     if(game.currentPlayer-1 == human_partner || (game.currentPlayer-1 == human_id)){
