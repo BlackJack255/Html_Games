@@ -48,6 +48,10 @@
     var searchData = document.querySelectorAll("[id^='searchdata-']")
 
     var hcp_info = document.getElementById("hcp-info")
+    var choose_contract = document.getElementById("choose-contract")
+    var choose_suit = document.getElementsByName("choose-suit")
+    var trick_level = document.getElementsByName("trick-level")
+    var set_contract = document.getElementById("set-contract")
     var contract_info = document.getElementById("contract-info")
 
     var dummy_hands = document.getElementById("dummy-hands")
@@ -358,6 +362,48 @@
         }
 
     }
+    function human_contract(){
+        // radio button
+        let human_trump = -1
+        for(let i=0; i<choose_suit.length&&(human_trump<0); i++){
+            if(choose_suit[i].checked)
+            {
+                human_trump = Number(choose_suit[i].value)
+            }
+        }
+        let human_trick = -1
+        for(let i=0; i<trick_level.length&&(human_trick<0); i++){
+            if(trick_level[i].checked)
+            {
+                human_trick = Number(trick_level[i].value)
+            }
+        }
+
+        if((human_trump>=0) && (human_trick>=0)){
+            // clear contract_info
+            let contract_str = `Contract: `
+
+            // get ai bid
+            let ai_str = `(Ai would bid ${game.contract_level-6}${suitMap.get(game.trump)})`
+
+            // if check then set bid
+            game.humanBid(human_trump, human_trick)
+
+            // show in contract_info
+            contract_str += `${playerMap.get(game.declarer)}  ${game.contract_level-6}${suitMap.get(game.trump)}`
+            
+            contract_str += ai_str
+            contract_info.innerHTML = contract_str
+
+            dummy_hands.replaceChildren()
+
+            choose_contract.style.display = "none"
+            human_turn = false
+        }
+        else{
+            msgP.textContent = `select a suit as trump, and select contract level`
+        }
+    }
 
     function replayAgain() {
         if(game!=null){
@@ -382,6 +428,28 @@
 
             nextTrick.removeAttribute("disabled")
             human_turn = false
+
+            if(game.declarer-1 == human_id){
+                game.bidding()
+                // if human is declarer
+                // activate contract choose
+                choose_contract.style.display = "block"
+                //set_contract.addEventListener("click", ()=>human_contract())
+                // show dummy's hand
+                let dummy_pos = game.dummy-1
+                let dummy_card_arr = game.hand_table[dummy_pos]
+                let dummy_str = "Dummy's hand: "
+                for(let i=0; i<dummy_card_arr.length; i++){
+                    if(dummy_card_arr[i] == VALID){
+                        let card_rank = i
+                        let letter = game.num2Letter(card_rank)
+
+                        dummy_str += letter + ", "
+                    }
+                }
+                dummy_str += '\n'
+                dummy_hands.innerHTML = dummy_str
+            }
         }
     }
 
@@ -396,6 +464,7 @@
             game.deal()
             deal_done = game.bidding()
         }
+        human_turn = false
 
         let hcp_str = `HCP: `
         for(let i=0; i<player_num; i++){
@@ -404,9 +473,35 @@
         hcp_info.innerHTML = hcp_str
 
         let contract_str = `Contract: `
-        // temporary fix base contract level as 6
-        contract_str += `${playerMap.get(game.declarer)}  ${game.contract_level-6}${suitMap.get(game.trump)}`
-        contract_info.innerHTML = contract_str
+        if(game.declarer-1 != human_id){
+            // temporary fix base contract level as 6
+            contract_str += `${playerMap.get(game.declarer)}  ${game.contract_level-6}${suitMap.get(game.trump)}`
+            contract_info.innerHTML = contract_str
+        }
+        else{
+            // temporary not allow halfTrick until human bid
+            human_turn = true
+
+            // show dummy's hand
+            let dummy_pos = game.dummy-1
+            let dummy_card_arr = game.hand_table[dummy_pos]
+            let dummy_str = "Dummy's hand: "
+            for(let i=0; i<dummy_card_arr.length; i++){
+                if(dummy_card_arr[i] == VALID){
+                    let card_rank = i
+                    let letter = game.num2Letter(card_rank)
+
+                    dummy_str += letter + ", "
+                }
+            }
+            dummy_str += '\n'
+            dummy_hands.innerHTML = dummy_str
+
+            // activate suit and level buttons
+            // style.display = "block"
+            choose_contract.style.display = "block"
+            set_contract.addEventListener("click", ()=>human_contract())
+        }
 
         // no matter declarer is South(human) or North(partner), force North be dummy
         if(game.dummy-1 == human_partner || game.dummy-1 == human_id){
@@ -464,7 +559,6 @@
                 human_hands.append(card_i)
             }
         }
-        human_turn = false
 
         replay_again.addEventListener("click", () => replayAgain())
 

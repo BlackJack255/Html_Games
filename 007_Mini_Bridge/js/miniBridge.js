@@ -554,6 +554,12 @@ exports.Game.prototype.bidding = function(){
 
 }
 
+exports.Game.prototype.humanBid = function(trump, contract_level){
+    // set contract
+    this.trump = trump
+    this.contract_level = contract_level
+}
+
 exports.Game.prototype.prepareDraw = function(){
     let player_i = this.currentPlayer - 1
 
