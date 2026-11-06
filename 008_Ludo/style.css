@@ -1,0 +1,89 @@
+:root{
+    --board-cols: 9;
+    --path-brown: rgb(247, 221, 205);
+    --base-brown: rgb(252, 240, 233);
+    --safe: rgba(193, 111, 242, 0.35);
+    --block: rgba(255, 0, 240, 0.5);
+    --semi-safe: rgba(203, 13, 255, 0.5);
+    /* player color */
+    --red: rgba(235, 28, 36, 0.35);
+    --green: rgba(2, 160, 75, 0.35);
+    --yellow: rgba(255, 224, 19, 0.35);
+    --blue: rgba(99, 248, 240, 0.35);
+    /* wood board background color */
+    --board-brown: rgb(245, 188, 147);
+    --selected: rgba(181, 72, 4, 0.35);
+    /* screen background color */
+
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(var(--board-cols), 1fr);
+    grid-template-rows: repeat(var(--board-cols), 1fr);
+    width: min(180vw, 960px);
+    height: min(180vw, 960px);
+    border-radius: 8px;
+}
+
+.square{
+    display: flex;
+    /* vertical center */
+    align-items: center;
+    /* horizontal center */
+    justify-content: center;
+
+    font-size: clamp(1.5rem, 5vw, 2.75rem);
+}
+
+.square.center {
+    background: var(--path-brown);
+}
+
+.square.path {
+    background: var(--path-brown);
+    border: 2px solid black;
+}
+
+.square.base {
+    background: var(--base-brown);
+    border: 1px solid black;
+}
+
+.square.safe {
+    background: var(--safe);
+    border: 2px solid black;
+}
+
+.square.block {
+    background: var(--block) !important;
+}
+
+.square.semi-safe {
+    background: var(--semi-safe) !important;
+}
+
+.square.red {
+    background: var(--red);
+    border: 1px solid black;
+}
+
+.square.green {
+    background: var(--green);
+    border: 1px solid black;
+}
+
+.square.yellow {
+    background: var(--yellow);
+    border: 1px solid black;
+}
+
+.square.blue {
+    background: var(--blue);
+    border: 1px solid black;
+}
+
+
+.square.select {
+    background: var(--selected);
+}
