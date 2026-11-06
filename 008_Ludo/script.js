@@ -399,7 +399,7 @@
             // map with count
             home_map[player_id].set(count, sq_ith)
             let sq = board.children[sq_ith]
-            sq.textContent = String(count)
+            //sq.textContent = String(count)
             sq.dataset.type = "home"
             sq.dataset.home_i = player_id
             sq.dataset.ith = count
@@ -485,7 +485,7 @@
             // map with count
             path_map.set(count, sq_ith)
             let sq = board.children[sq_ith]
-            sq.textContent = String(count)
+            //sq.textContent = String(count)
             sq.dataset.type = "path"
             sq.dataset.home_i = NONE
             sq.dataset.ith = count
