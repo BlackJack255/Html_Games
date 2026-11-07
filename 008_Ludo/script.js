@@ -26,6 +26,9 @@
     let circuit_len = (part_path_len) * 4
     let board_cols = ((home_col_len+1)+1)*2 + 3
 
+    var token_butt = document.getElementsByName("token-butt")
+    var new_game_butt = document.getElementById("new-game")
+
     const NONE = -1
 
     var board = document.getElementById("board")
@@ -591,6 +594,11 @@
     }
 
     function newGame(){
+        for(let i=0; i<token_butt.length; i++){
+            if(token_butt[i].checked){
+                token_num = Number(token_butt[i].value)
+            }
+        }
         // game, ai
         game = new ludo.Game()
         game.setGame(player_num, human_num, ai_num, home_col_len, token_num, true)
@@ -626,6 +634,9 @@
         console.log("game: ", game)
         
         document.documentElement.style.setProperty('--board-cols', board_cols)
+
+        // clear children if exist
+        board.replaceChildren()
 
         for(let i=0; i<board_cols; i++){
             for(let j=0; j<board_cols; j++){
@@ -680,7 +691,7 @@
 
     }
 
-    newGame()
+    new_game_butt.addEventListener("click", ()=>newGame())
 
 
     // include human play mode
